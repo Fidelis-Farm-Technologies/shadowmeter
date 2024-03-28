@@ -1,0 +1,3 @@
+[submodule "cert-nsa-libfixbuf"]
+	path = cert-nsa-libfixbuf
+	url = git@github.com:Fidelis-Farm-Technologies/cert-nsa-libfixbuf.git
