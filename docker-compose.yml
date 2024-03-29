@@ -1,0 +1,34 @@
+version: '3.7'
+services:
+  yaf:
+    image: fidelisfarmtech/shadowmeter
+    container_name: yaf
+    restart: unless-stopped      
+    network_mode: host
+    cap_add:
+      - net_admin
+      - net_raw
+      - sys_nice
+    environment:
+      - INTERFACE=enp4s0  
+    volumes:
+      - /opt/shadowmeter/spool:/opt/shadowmeter/spool
+      - /opt/shadowmeter/log:/opt/shadowmeter/log
+      - /opt/shadowmeter/run:/opt/shadowmeter/run
+    depends_on:
+      - super_mediator
+    command: /opt/shadowmeter/scripts/yaf-entrypoint.sh
+
+  super_mediator:
+    image: fidelisfarmtech/shadowmeter
+    container_name: super_mediator
+    restart: unless-stopped   
+    environment:
+      - OUTPUT_MODE=json      
+    volumes:
+      - /opt/shadowmeter/spool:/opt/shadowmeter/spool
+      - /opt/shadowmeter/log:/opt/shadowmeter/log
+      - /opt/shadowmeter/run:/opt/shadowmeter/run
+    command: /opt/shadowmeter/scripts/super_mediator-entrypoint.sh
+
+
