@@ -1,0 +1,35 @@
+FROM bitnami/minideb:bookworm as shadowmeter_base
+
+# ---------------------------------------------------------------
+#
+# ---------------------------------------------------------------
+RUN apt-get update
+RUN apt-get install -y build-essential xsltproc libglib2.0-dev \
+    autotools-dev automake libpcap-dev libpcre3-dev libssl-dev flex
+WORKDIR /builder
+COPY . .
+#
+# build libfixbuf
+#
+WORKDIR /builder/cert-nsa-libfixbuf
+RUN ./configure --prefix=/opt/shadowmeter --disable-tools 
+RUN make && make install
+#
+# Update the LD_LIBRARY_PATH
+#
+RUN echo "/opt/shadowmeter/lib" > /etc/ld.so.conf.d/shadowmeter.conf
+RUN ldconfig
+#
+# build yaf
+#
+WORKDIR /builder/cert-nsa-yaf
+#./configure --prefix=/opt/shadowmeter --with-ndpi  --enable-entropy --enable-applabel --enable-dpi
+RUN ./configure --prefix=/opt/shadowmeter --enable-entropy --enable-applabel --enable-dpi 
+RUN make && make install
+#
+# build super_mediator
+#
+WORKDIR /builder/cert-nsa-super_mediator
+RUN ./configure --prefix=/opt/shadowmeter 
+RUN make && make install
+
