@@ -11,8 +11,8 @@ FROM bitnami/minideb:bookworm AS runner
 COPY --from=builder /opt/shadowmeter /opt/shadowmeter
 RUN mkdir -p /opt/shadowmeter/scripts /opt/shadowmeter/etc
 WORKDIR /opt/shadowmeter
-COPY ./scripts/yaf-entrypoint.sh /opt/shadowmeter/scripts
-COPY ./scripts/super_mediator-entrypoint.sh /opt/shadowmeter/scripts
+COPY ./scripts/entrypoint-yaf.sh /opt/shadowmeter/scripts
+COPY ./scripts/entrypoint-super_mediator.sh /opt/shadowmeter/scripts
 
 COPY --from=builder \
     /usr/lib/x86_64-linux-gnu/libpcap.so.1.10.3 \

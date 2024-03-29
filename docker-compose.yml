@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   yaf:
-    image: shadowmeter
+    image: fidelismachine/shadowmeter
     container_name: yaf
     restart: unless-stopped      
     network_mode: host
@@ -10,19 +10,31 @@ services:
       - net_raw
       - sys_nice
     environment:
-      - INTERFACE=enp4s0  
+      - INTERFACE=${INTERFACE}
     volumes:
       - /opt/shadowmeter/spool:/opt/shadowmeter/spool
     depends_on:
       - super_mediator
-    command: /opt/shadowmeter/scripts/yaf-entrypoint.sh
+    command: /opt/shadowmeter/scripts/entrypoint-yaf.sh
 
   super_mediator:
-    image: shadowmeter
+    image: fidelismachine/shadowmeter
     container_name: super_mediator
     restart: unless-stopped   
-    #environment:
-    #  - OUTPUT_MODE=json      
+    environment:
+      - OUTPUT_MODE=${OUTPUT_MODE}      
     volumes:
       - /opt/shadowmeter/spool:/opt/shadowmeter/spool
-    command: /opt/shadowmeter/scripts/super_mediator-entrypoint.sh
+    command: /opt/shadowmeter/scripts/entrypoint-super_mediator.sh
+
+  datadog:
+    image: timberio/vector:0.37.0-debian
+    container_name: datadog
+    restart: unless-stopped     
+    environment:
+      - DATADOG_API_KEY=${DATADOG_API_KEY}    
+      - DATADOG_ENDPOINT=${DATADOG_ENDPOINT} 
+    volumes:
+      - /opt/shadowmeter/spool:/opt/shadowmeter/spool:ro    
+      - ${PWD}/etc/shadowmeter-vector.yaml:/etc/vector/vector.yaml:ro
+
