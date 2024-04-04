@@ -27,7 +27,6 @@ impl Appender {
     }
 
     pub fn process_json_file(&mut self, file_name: &String) -> Result<()> {
-        
         println!("processing: {}", file_name);
         let mut buffer = Buffer::new();
         let file = File::open(file_name).expect("Error: opening json file");
@@ -65,80 +64,49 @@ impl Appender {
             }
             let _ = buffer
                 .table("flow")?
-                .symbol("sensorId",self.sensor_id.clone())?
-                .column_ts("flowStartMilliseconds", TimestampMicros::new(start_time_ms))?
-                .column_ts("flowEndMilliseconds", TimestampMicros::new(end_time_ms))?
-                .column_i64(
-                    "protocolIdentifier",
-                    flow["protocolIdentifier"].as_i64().unwrap(),
-                )?
+                .symbol("sid", self.sensor_id.clone())?
+                .column_ts("stime", TimestampMicros::new(start_time_ms))?
+                .column_ts("ltime", TimestampMicros::new(end_time_ms))?
+                .column_i64("proto", flow["protocolIdentifier"].as_i64().unwrap())?
+                .column_str("saddr", flow["sourceIPv4Address"].as_str().unwrap())?
+                .column_i64("sport", flow["sourceTransportPort"].as_i64().unwrap())?
+                .column_str("daddr", flow["destinationIPv4Address"].as_str().unwrap())?
+                .column_i64("dport", flow["destinationTransportPort"].as_i64().unwrap())?
+                .column_str("sutcp", flow["unionTCPFlags"].as_str().unwrap_or(""))?
                 .column_str(
-                    "sourceIPv4Address",
-                    flow["sourceIPv4Address"].as_str().unwrap(),
-                )?
-                .column_i64(
-                    "sourceTransportPort",
-                    flow["sourceTransportPort"].as_i64().unwrap(),
-                )?
-                .column_str(
-                    "destinationIPv4Address",
-                    flow["destinationIPv4Address"].as_str().unwrap(),
-                )?
-                .column_i64(
-                    "destinationTransportPort",
-                    flow["destinationTransportPort"].as_i64().unwrap(),
-                )?
-                .column_str(
-                    "unionTCPFlags",
-                    flow["unionTCPFlags"].as_str().unwrap_or(""),
-                )?
-                .column_str(
-                    "reverseUnionTCPFlags",
+                    "dutcp",
                     flow["reverseUnionTCPFlags"].as_str().unwrap_or(""),
                 )?
+                .column_str("sitcp", flow["initialTCPFlags"].as_str().unwrap_or(""))?
                 .column_str(
-                    "initialTCPFlags",
-                    flow["initialTCPFlags"].as_str().unwrap_or(""),
-                )?
-                .column_str(
-                    "reverseInitialTCPFlags",
+                    "ditcp",
                     flow["reverseInitialTCPFlags"].as_str().unwrap_or(""),
                 )?
                 .column_str(
-                    "firstEightNonEmptyPacketDirections",
+                    "spd",
                     flow["firstEightNonEmptyPacketDirections"]
                         .as_str()
                         .unwrap_or(""),
                 )?
-                .column_i64("vlanId", flow["vlanId"].as_i64().unwrap())?
-                .column_i64("dataByteCount", flow["dataByteCount"].as_i64().unwrap())?
+                .column_i64("vlan", flow["vlanId"].as_i64().unwrap())?
+                .column_i64("sdata", flow["dataByteCount"].as_i64().unwrap())?
+                .column_i64("ddata", flow["reverseDataByteCount"].as_i64().unwrap())?
+                .column_i64("sbytes", flow["octetTotalCount"].as_i64().unwrap())?
+                .column_i64("dbytes", flow["reverseOctetTotalCount"].as_i64().unwrap())?
+                .column_i64("spkts", flow["packetTotalCount"].as_i64().unwrap())?
                 .column_i64(
-                    "reverseDataByteCount",
-                    flow["reverseDataByteCount"].as_i64().unwrap(),
-                )?
-                .column_i64("octetTotalCount", flow["octetTotalCount"].as_i64().unwrap())?
-                .column_i64(
-                    "reverseOctetTotalCount",
-                    flow["reverseOctetTotalCount"].as_i64().unwrap(),
-                )?
-                .column_i64(
-                    "packetTotalCount",
-                    flow["packetTotalCount"].as_i64().unwrap(),
-                )?
-                .column_i64(
-                    "reversePacketTotalCount",
+                    "dpkts",
                     flow["reversePacketTotalCount"].as_i64().unwrap(),
                 )?
-                .column_i64("payloadEntropy", flow["payloadEntropy"].as_i64().unwrap())?
+                .column_i64("sentropy", flow["payloadEntropy"].as_i64().unwrap())?
+                .column_i64("dentropy", flow["reversePayloadEntropy"].as_i64().unwrap())?
+                .column_i64("siat", flow["averageInterarrivalTime"].as_i64().unwrap())?
                 .column_i64(
-                    "reversePayloadEntropy",
-                    flow["reversePayloadEntropy"].as_i64().unwrap(),
+                    "diat",
+                    flow["reverseAverageInterarrivalTime"].as_i64().unwrap(),
                 )?
-                .column_str(
-                    "flowEndReason",
-                    flow["flowEndReason"].as_str().unwrap_or(""),
-                )?
-                .column_str("AppLabel", silk_app_label)?
+                .column_str("reason", flow["flowEndReason"].as_str().unwrap_or(""))?
+                .column_str("applabel", silk_app_label)?
                 .at(TimestampNanos::now())
                 .unwrap();
 
