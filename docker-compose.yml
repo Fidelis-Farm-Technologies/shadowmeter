@@ -10,11 +10,13 @@ services:
       - net_raw
       - sys_nice
     environment:
-      - INTERFACE=${INTERFACE}
-      - OBSERVATION_DOMAIN=${OBSERVATION_DOMAIN}
+      #- YAF_INTERFACE=${YAF_INTERFACE}
+      - YAF_PCAPS=${YAF_PCAPS}      
+      - YAF_OBSERVATION_DOMAIN_ID=${YAF_OBSERVATION_DOMAIN_ID}
       - YAF_OPTIONS=${YAF_OPTIONS}
     volumes:
       - /opt/shadowmeter/spool:/opt/shadowmeter/spool
+      - /opt/shadowmeter/pcap:/opt/shadowmeter/pcap:ro
     depends_on:
       - super_mediator
     command: /opt/shadowmeter/scripts/entrypoint-yaf.sh
@@ -23,12 +25,10 @@ services:
     image: fidelismachine/shadowmeter
     container_name: super_mediator
     restart: unless-stopped   
-    environment:
-      - OUTPUT_MODE=${OUTPUT_MODE}      
-      - SUPER_MEDIATOR_OPTIONS=${YAF_OPTIONS}
     volumes:
       - /opt/shadowmeter/spool:/opt/shadowmeter/spool
     command: /opt/shadowmeter/scripts/entrypoint-super_mediator.sh
+
   questdb:
     image: questdb/questdb
     container_name: questdb
@@ -60,6 +60,16 @@ services:
       # - QBD_LINE_UDP_ENABLED=false # Disable influxdb udp server
       # - QBD_LINE_UDP_NET_BIND_TO=0.0.0.0:9009 # influxdb udp server
 
+  questdb_logger:
+    image: fidelismachine/shadowmeter
+    container_name: questdb_logger
+    restart: unless-stopped   
+    volumes:
+      - /opt/shadowmeter/spool:/opt/shadowmeter/spool
+    depends_on:
+      - questdb      
+    command: /opt/shadowmeter/scripts/entrypoint-questdb_logger.sh
+    
   #grafana:
   #  image: grafana/grafana-oss
   #  container_name: grafana

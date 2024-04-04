@@ -25,7 +25,8 @@ impl Appender {
     }
 
     pub fn process_json_file(&mut self, file_name: &String) -> Result<()> {
-        // println!("processing json file: {}", file_name);
+        
+        println!("processing: {}", file_name);
         let mut buffer = Buffer::new();
         let file = File::open(file_name).expect("Error: opening json file");
         for line in BufReader::new(file).lines() {
@@ -60,7 +61,12 @@ impl Appender {
                     silk_app_label = value.clone();
                 }
             }
-
+            /* 
+            .symbol(
+                "observationDomainName",
+                flow["observationDomainName"].as_str().unwrap_or("3"),
+            )?
+            */
             let _ = buffer
                 .table("flow")?
                 .symbol("observationId", "sm")?

@@ -2,7 +2,7 @@
 
 CONFIG_FILE=/opt/shadowmeter/etc/super_mediator_json.conf
 
-[ "$OUTPUT_MODE" == "TEXT" ] && CONFIG_FILE=/opt/shadowmeter/etc/super_mediator_text.conf
+[ "$SM_EXPORT_MODE" == "TEXT" ] && CONFIG_FILE=/opt/shadowmeter/etc/super_mediator_text.conf
 
 
 if [ ! -d /opt/shadowmeter/spool/dpi ]; then

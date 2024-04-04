@@ -4,10 +4,20 @@ FROM bitnami/minideb:bookworm as shadowmeter_base
 #
 # ---------------------------------------------------------------
 RUN apt-get update
-RUN apt-get install -y build-essential xsltproc libglib2.0-dev \
-    autotools-dev automake libpcap-dev libpcre3-dev libssl-dev flex
+RUN apt-get install -y build-essential xsltproc libglib2.0-dev automake \
+    autotools-dev libpcap-dev libpcre3-dev libssl-dev flex curl
+# Get Rust and cargo
+RUN curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y
+RUN echo 'source $HOME/.cargo/env' >> $HOME/.bashrc
+ENV PATH=/root/.cargo/bin:$PATH
+
 WORKDIR /builder
 COPY . .
+#
+# build questdb_logger
+#
+WORKDIR /builder/questdb_logger
+RUN cargo build --release
 #
 # build libfixbuf
 #
@@ -32,4 +42,5 @@ RUN make && make install
 WORKDIR /builder/cert-nsa-super_mediator
 RUN ./configure --prefix=/opt/shadowmeter 
 RUN make && make install
+
 

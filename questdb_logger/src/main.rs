@@ -35,7 +35,7 @@ fn main() {
 
     let mut db = questdb::Appender::new(&args.questdb);
     let sleep_interval = time::Duration::from_millis(1000);
-
+    println!("questdb_logger: running");
     loop {
         let mut count = 0;
         for entry in glob(&args.input).expect("Failed to read glob pattern") {

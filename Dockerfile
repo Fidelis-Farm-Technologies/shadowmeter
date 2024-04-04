@@ -8,11 +8,13 @@ FROM bitnami/minideb:bookworm AS runner
 # ---------------------------------------------------------------
 #
 # ---------------------------------------------------------------
+
 COPY --from=builder /opt/shadowmeter /opt/shadowmeter
 RUN mkdir -p /opt/shadowmeter/scripts /opt/shadowmeter/etc
 WORKDIR /opt/shadowmeter
 COPY ./scripts/entrypoint-yaf.sh /opt/shadowmeter/scripts
 COPY ./scripts/entrypoint-super_mediator.sh /opt/shadowmeter/scripts
+COPY ./scripts/entrypoint-questdb_logger.sh /opt/shadowmeter/scripts
 
 COPY --from=builder \
     /usr/lib/x86_64-linux-gnu/libpcap.so.1.10.3 \
@@ -23,8 +25,9 @@ COPY --from=builder \
     /usr/lib/x86_64-linux-gnu/libcrypto.so.3 \
     /usr/lib/x86_64-linux-gnu/
 
-COPY --from=builder /builder/etc/super_mediator_json.conf /opt/shadowmeter/etc
+COPY --from=builder /builder/questdb_logger/target/release/questdb_logger /opt/shadowmeter/bin
 COPY --from=builder /builder/etc/super_mediator_text.conf /opt/shadowmeter/etc
+COPY --from=builder /builder/etc/super_mediator_json.conf /opt/shadowmeter/etc
 COPY --from=builder /builder/etc/yafDPIRules.conf /opt/shadowmeter/etc
 COPY --from=builder /builder/etc/shadowmeter.logrotate /opt/shadowmeter/etc
 RUN echo "/opt/shadowmeter/lib" > /etc/ld.so.conf.d/shadowmeter.conf
