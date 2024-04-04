@@ -1,4 +1,4 @@
 #!/bin/bash
-VERSION="0.0.2"
+VERSION=`git branch --show-current`
 
 docker build -t fidelismachine/shadowmeter:${VERSION} -t fidelismachine/shadowmeter:latest .
