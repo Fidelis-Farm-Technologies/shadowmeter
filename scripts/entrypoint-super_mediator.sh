@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CONFIG_FILE=/opt/shadowmeter/etc/super_mediator.conf
+CONFIG_FILE=/opt/shadowmeter/etc/super_mediator_json.conf
 
 [ "$OUTPUT_MODE" == "TEXT" ] && CONFIG_FILE=/opt/shadowmeter/etc/super_mediator_text.conf
 
@@ -17,7 +17,9 @@ fi
 if [ ! -d /opt/shadowmeter/spool/flow ]; then
     mkdir -p /opt/shadowmeter/spool/flow
 fi
-
+if [ ! -d /opt/shadowmeter/spool/processed ]; then
+    mkdir -p /opt/shadowmeter/spool/processed
+fi
 /opt/shadowmeter/bin/super_mediator --config ${CONFIG_FILE}
 
 

@@ -19,6 +19,8 @@ sinks:
     inputs:
       - "flow_logs_parser"
     compression: "gzip"
+    buffer:
+      -type: "disk"
     default_api_key: "$DATADOG_API_KEY"
     endpoint: "$DATADOG_ENDPOINT"
 

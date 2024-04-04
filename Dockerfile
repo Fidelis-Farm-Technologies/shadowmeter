@@ -23,7 +23,7 @@ COPY --from=builder \
     /usr/lib/x86_64-linux-gnu/libcrypto.so.3 \
     /usr/lib/x86_64-linux-gnu/
 
-COPY --from=builder /builder/etc/super_mediator.conf /opt/shadowmeter/etc
+COPY --from=builder /builder/etc/super_mediator_json.conf /opt/shadowmeter/etc
 COPY --from=builder /builder/etc/super_mediator_text.conf /opt/shadowmeter/etc
 COPY --from=builder /builder/etc/yafDPIRules.conf /opt/shadowmeter/etc
 COPY --from=builder /builder/etc/shadowmeter.logrotate /opt/shadowmeter/etc

@@ -11,6 +11,8 @@ services:
       - sys_nice
     environment:
       - INTERFACE=${INTERFACE}
+      - OBSERVATION_DOMAIN=${OBSERVATION_DOMAIN}
+      - YAF_OPTIONS=${YAF_OPTIONS}
     volumes:
       - /opt/shadowmeter/spool:/opt/shadowmeter/spool
     depends_on:
@@ -23,18 +25,49 @@ services:
     restart: unless-stopped   
     environment:
       - OUTPUT_MODE=${OUTPUT_MODE}      
+      - SUPER_MEDIATOR_OPTIONS=${YAF_OPTIONS}
     volumes:
       - /opt/shadowmeter/spool:/opt/shadowmeter/spool
     command: /opt/shadowmeter/scripts/entrypoint-super_mediator.sh
-
-  datadog:
-    image: timberio/vector:0.37.0-debian
-    container_name: datadog
-    restart: unless-stopped     
-    environment:
-      - DATADOG_API_KEY=${DATADOG_API_KEY}    
-      - DATADOG_ENDPOINT=${DATADOG_ENDPOINT} 
+  questdb:
+    image: questdb/questdb
+    container_name: questdb
+    restart: always
+    ports:
+      - 9000:9000
+      - 9009:9009
+      - 8812:8812
+      - 9003:9003
     volumes:
-      - /opt/shadowmeter/spool:/opt/shadowmeter/spool:ro    
-      - ${PWD}/etc/shadowmeter-vector.yaml:/etc/vector/vector.yaml:ro
+      - /opt/shadowmeter/questdb:/root/.questdb
+    environment:
+      - QDB_LOG_W_STDOUT_LEVEL=ERROR
+      - QDB_LOG_W_FILE_LEVEL=ERROR
+      - QDB_LOG_W_HTTP_MIN_LEVEL=ERROR
+      - QDB_SHARED_WORKER_COUNT=2 # Amount of worker threads
+      - QDB_PG_USER=${username} # postgresql user -> Configured in .env file
+      - QDB_PG_PASSWORD=${password} # postgresql password -> Configured in .env file
+      - QDB_TELEMETRY_ENABLED=false # Disable telemetry
+      # - QDB_HTTP_ENABLED=false # Disable http server gui and rest interface
+      # - QDB_HTTP_BIND_TO=0.0.0.0:9000 # http server
+      # - QDB_HTTP_SECURITY_READONLY=true # HTTP read only mode
+      # - QDB_HTTP_MIN_ENABLED=false # Disable http health server
+      # - QDB_HTTP_MIN_BIND_TO=0.0.0.0:9003 # http health server
+      # - QDB_PG_ENABLED=false # Disable postgresql
+      # - QDB_PG_NET_BIND_TO=0.0.0.0:8812 # postgresql server
+      # - QBD_LINE_TCP_ENABLED=false # Disable influxdb tcp server
+      # - QBD_LINE_TCP_NET_BIND_TO=0.0.0.0:9009 # influxdb tcp server
+      # - QBD_LINE_UDP_ENABLED=false # Disable influxdb udp server
+      # - QBD_LINE_UDP_NET_BIND_TO=0.0.0.0:9009 # influxdb udp server
 
+  #grafana:
+  #  image: grafana/grafana-oss
+  #  container_name: grafana
+  #  restart: always
+  #  networks:
+  #  - default
+  #  user: "0:0"
+  #  volumes:
+  #    - /var/lib/grafana:/var/lib/grafana
+  #  ports:
+  #    - 3000:3000
