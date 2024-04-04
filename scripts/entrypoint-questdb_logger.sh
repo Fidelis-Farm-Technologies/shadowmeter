@@ -6,4 +6,5 @@ fi
 
 /opt/shadowmeter/bin/questdb_logger --input "/opt/shadowmeter/spool/flow/flow*.json" \
     --output /opt/shadowmeter/spool/processed \
-    --questdb questdb:9009
+    --questdb questdb:9009 \
+    --sensor-id ${SENSOR_ID}

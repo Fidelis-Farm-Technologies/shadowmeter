@@ -23,6 +23,9 @@ struct Args {
 
     #[arg(short, long)]
     questdb: String,
+
+    #[arg(short, long)]
+    sensor_id: String,
 }
 
 
@@ -33,7 +36,7 @@ fn main() {
         dest_dir = args.output.clone().unwrap();
     }
 
-    let mut db = questdb::Appender::new(&args.questdb);
+    let mut db = questdb::Appender::new(&args.sensor_id, &args.questdb);
     let sleep_interval = time::Duration::from_millis(1000);
     println!("questdb_logger: running");
     loop {

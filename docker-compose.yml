@@ -10,9 +10,8 @@ services:
       - net_raw
       - sys_nice
     environment:
-      #- YAF_INTERFACE=${YAF_INTERFACE}
-      - YAF_PCAPS=${YAF_PCAPS}      
-      - YAF_OBSERVATION_DOMAIN_ID=${YAF_OBSERVATION_DOMAIN_ID}
+      - YAF_INTERFACE=${YAF_INTERFACE}
+      - YAF_PCAP_LIST=${YAF_PCAP_LIST}      
       - YAF_OPTIONS=${YAF_OPTIONS}
     volumes:
       - /opt/shadowmeter/spool:/opt/shadowmeter/spool
@@ -36,8 +35,8 @@ services:
     ports:
       - 9000:9000
       - 9009:9009
-      - 8812:8812
-      - 9003:9003
+      # - 8812:8812
+      # - 9003:9003
     volumes:
       - /opt/shadowmeter/questdb:/root/.questdb
     environment:
@@ -45,8 +44,8 @@ services:
       - QDB_LOG_W_FILE_LEVEL=ERROR
       - QDB_LOG_W_HTTP_MIN_LEVEL=ERROR
       - QDB_SHARED_WORKER_COUNT=2 # Amount of worker threads
-      - QDB_PG_USER=${username} # postgresql user -> Configured in .env file
-      - QDB_PG_PASSWORD=${password} # postgresql password -> Configured in .env file
+      - QDB_PG_USER=${QDB_USERNAME} # postgresql user -> Configured in .env file
+      - QDB_PG_PASSWORD=${QDB_PASSWORD} # postgresql password -> Configured in .env file
       - QDB_TELEMETRY_ENABLED=false # Disable telemetry
       # - QDB_HTTP_ENABLED=false # Disable http server gui and rest interface
       # - QDB_HTTP_BIND_TO=0.0.0.0:9000 # http server
@@ -64,10 +63,13 @@ services:
     image: fidelismachine/shadowmeter
     container_name: questdb_logger
     restart: unless-stopped   
+    environment:
+      - SENSOR_ID=${SENSOR_ID}    
     volumes:
       - /opt/shadowmeter/spool:/opt/shadowmeter/spool
     depends_on:
-      - questdb      
+      - questdb
+      - super_mediator       
     command: /opt/shadowmeter/scripts/entrypoint-questdb_logger.sh
     
   #grafana:

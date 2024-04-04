@@ -13,13 +13,15 @@ use lazy_static::lazy_static;
 use std::collections::HashMap;
 
 pub struct Appender {
+    sensor_id: String,
     db_sender: Sender,
 }
 
 impl Appender {
-    pub fn new(db_url: &str) -> Appender {
+    pub fn new(sensor_id: &str, db_url: &str) -> Appender {
         let db_sender = Sender::from_conf(format!("tcp::addr={db_url};"));
         Appender {
+            sensor_id: sensor_id.to_string().clone(),
             db_sender: db_sender.expect("Error: failed to connecto to questdb"),
         }
     }
@@ -61,15 +63,9 @@ impl Appender {
                     silk_app_label = value.clone();
                 }
             }
-            /* 
-            .symbol(
-                "observationDomainName",
-                flow["observationDomainName"].as_str().unwrap_or("3"),
-            )?
-            */
             let _ = buffer
                 .table("flow")?
-                .symbol("observationId", "sm")?
+                .symbol("sensorId",self.sensor_id.clone())?
                 .column_ts("flowStartMilliseconds", TimestampMicros::new(start_time_ms))?
                 .column_ts("flowEndMilliseconds", TimestampMicros::new(end_time_ms))?
                 .column_i64(
