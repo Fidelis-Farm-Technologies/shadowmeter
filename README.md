@@ -17,6 +17,8 @@ This project is motivated by the following:
 
 ## Docker Image
 
+[DockerHub](https://hub.docker.com/r/fidelismachine/shadowmeter)
+
 ````
 docker pull fidelismachine/shadowmeter:latest
 ````
