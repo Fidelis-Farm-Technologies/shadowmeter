@@ -21,8 +21,8 @@ This project is motivated by the following:
 docker pull fidelismachine/shadowmeter:latest
 ````
 ---
-## Project Blog
-[https://www.shadowmeter.io](https://www.shadowmeter.io)
+## Community
+[Blog](https://www.shadowmeter.io)
 
 
 
