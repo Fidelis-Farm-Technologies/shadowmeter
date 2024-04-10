@@ -14,6 +14,7 @@ pub struct Analyzer {
 
 impl Analyzer {
     pub fn new(input: Receiver<Record>, output: SyncSender<Record>, model_file: String) -> Self {
+        println!("model file: {}", model_file);
         Self {
             input: input,
             output: output,
@@ -22,8 +23,8 @@ impl Analyzer {
     }
 
     pub fn process_loop(&mut self)  {
-        println!("model file: {}", self.model_file);
-
+        println!("process_loop: running");
+        process_loop
         loop {
             let record = self.input.recv().unwrap();
             self.output.send(record).expect("error sending record");

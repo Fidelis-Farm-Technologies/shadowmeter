@@ -1,39 +1,43 @@
-
 extern crate serde_derive;
 
-use std::sync::mpsc::{SyncSender};
-use std::io::Error;
 use chrono::NaiveDateTime;
-use std::fs::File;
-use std::io::{BufRead, BufReader};
 use glob::glob;
+use std::fs::File;
+use std::io::Error;
+use std::io::{BufRead, BufReader};
+use std::sync::mpsc::SyncSender;
 
 use lazy_static::lazy_static;
+use serde_json::Value;
 use std::collections::HashMap;
 use std::{fs, thread, time};
-use serde_json::{Value};
-pub struct YafFiles{
+
+pub struct YafFiles {
     sensor_id: String,
     directory_glob: String,
     processed_dir: String,
-    output: SyncSender<Record>
+    output: SyncSender<Record>,
 }
 
 use crate::flow::Record;
 
-
 impl YafFiles {
-    pub fn new(sensor_id: &String, directory_glob: &String, processed_dir: &String, output: SyncSender<Record>) -> Self {
+    pub fn new(
+        sensor_id: &String,
+        directory_glob: &String,
+        processed_dir: &String,
+        output: SyncSender<Record>,
+    ) -> Self {
         Self {
             sensor_id: sensor_id.clone(),
             directory_glob: directory_glob.clone(),
             processed_dir: processed_dir.clone(),
-            output: output
+            output: output,
         }
     }
-    pub fn process_loop (&mut self) {
+    pub fn process_loop(&mut self) {
         let sleep_interval = time::Duration::from_millis(1000);
-        println!("loop_forever: running");
+        println!("process_loop: running");
         loop {
             let mut count = 0;
             for entry in glob(&self.directory_glob).expect("Failed to read glob pattern") {
@@ -47,19 +51,15 @@ impl YafFiles {
                             src_file.to_str().unwrap()
                         );
                         let dst = format!("{}/{}", &self.processed_dir, src_file.to_str().unwrap());
-    
 
-                        //match db.process_json_file(&src) {
-                        match self.process_file (&src) {
+                        match self.process_file(&src) {
                             Ok(_success) => count = count + 1,
                             Err(error) => println!("Failed to process: {} -- {}", src, error),
                         }
-    
+
                         if self.processed_dir.is_empty() {
-                            //println!("removed: {} ", src);
                             fs::remove_file(src).unwrap();
                         } else {
-                            //println!("moved: src: {}, dst: {} ", src, dst);
                             fs::rename(src, dst).unwrap();
                         }
                         count = count + 1;
@@ -73,8 +73,8 @@ impl YafFiles {
     }
 
     fn process_file(&mut self, file_name: &String) -> Result<(), Error> {
-        println!("processing: {}", file_name);
-    
+        println!("process_file: {}", file_name);
+
         let file = File::open(file_name)?;
         for line in BufReader::new(file).lines() {
             let line = line.expect("Error: reading json record");
@@ -112,30 +112,39 @@ impl YafFiles {
             let record = Record {
                 sid: self.sensor_id.clone(),
                 stime: start_time_ms,
-                ltime:  last_time_ms,
+                ltime: last_time_ms,
                 proto: flow["protocolIdentifier"].as_i64().unwrap(),
-                saddr:  flow["sourceIPv4Address"].to_string(),
+                saddr: flow["sourceIPv4Address"].to_string(),
                 sport: flow["sourceTransportPort"].as_i64().unwrap(),
-                daddr:  flow["destinationIPv4Address"].to_string(),
+                daddr: flow["destinationIPv4Address"].to_string(),
                 dport: flow["destinationTransportPort"].as_i64().unwrap(),
                 sutcp: flow["unionTCPFlags"].as_str().unwrap_or("").to_string(),
-                dutcp: flow["reverseUnionTCPFlags"].as_str().unwrap_or("").to_string(),
+                dutcp: flow["reverseUnionTCPFlags"]
+                    .as_str()
+                    .unwrap_or("")
+                    .to_string(),
                 sitcp: flow["initialTCPFlags"].as_str().unwrap_or("").to_string(),
-                ditcp: flow["reverseInitialTCPFlags"].as_str().unwrap_or("").to_string(),
-                spd: flow["firstEightNonEmptyPacketDirections"].as_str().unwrap_or("").to_string(),
+                ditcp: flow["reverseInitialTCPFlags"]
+                    .as_str()
+                    .unwrap_or("")
+                    .to_string(),
+                spd: flow["firstEightNonEmptyPacketDirections"]
+                    .as_str()
+                    .unwrap_or("")
+                    .to_string(),
                 vlan: flow["vlanId"].as_i64().unwrap(),
                 sdata: flow["dataByteCount"].as_i64().unwrap(),
-                ddata:  flow["reverseDataByteCount"].as_i64().unwrap(),
+                ddata: flow["reverseDataByteCount"].as_i64().unwrap(),
                 sbytes: flow["octetTotalCount"].as_i64().unwrap(),
                 dbytes: flow["reverseOctetTotalCount"].as_i64().unwrap(),
                 spkts: flow["packetTotalCount"].as_i64().unwrap(),
-                dpkts:  flow["reversePacketTotalCount"].as_i64().unwrap(), 
-                sentropy:  flow["payloadEntropy"].as_i64().unwrap(),
+                dpkts: flow["reversePacketTotalCount"].as_i64().unwrap(),
+                sentropy: flow["payloadEntropy"].as_i64().unwrap(),
                 dentropy: flow["reversePayloadEntropy"].as_i64().unwrap(),
                 siat: flow["averageInterarrivalTime"].as_i64().unwrap(),
                 diat: flow["reverseAverageInterarrivalTime"].as_i64().unwrap(),
                 reason: flow["flowEndReason"].as_str().unwrap_or("").to_string(),
-                applabel: silk_app_label
+                applabel: silk_app_label,
             };
             self.output.send(record).expect("error sending record");
         }
