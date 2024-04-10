@@ -5,12 +5,15 @@
 
 extern crate glob;
 
+use crate::flow::Record;
 use clap::Parser;
-use glob::glob;
+use std::sync::mpsc;
+use std::{thread};
 
-use std::{fs, thread, time};
-
-mod questdb;
+mod flow;
+mod logger;
+mod scanner;
+mod analyzer;
 
 #[derive(Debug, Parser)]
 #[command(version, about, long_about = None)]
@@ -28,7 +31,6 @@ struct Args {
     sensor_id: String,
 }
 
-
 fn main() {
     let args = Args::parse();
     let mut dest_dir = String::new();
@@ -36,41 +38,23 @@ fn main() {
         dest_dir = args.output.clone().unwrap();
     }
 
-    let mut db = questdb::Appender::new(&args.sensor_id, &args.questdb);
-    let sleep_interval = time::Duration::from_millis(1000);
-    println!("questdb_logger: running");
-    loop {
-        let mut count = 0;
-        for entry in glob(&args.input).expect("Failed to read glob pattern") {
-            if let Ok(path) = entry {
-                if path.is_file() {
-                    let src_dir = path.parent().unwrap();
-                    let src_file = path.file_name().unwrap();
-                    let src = format!(
-                        "{}/{}",
-                        src_dir.to_str().unwrap(),
-                        src_file.to_str().unwrap()
-                    );
-                    let dst = format!("{}/{}", &dest_dir, src_file.to_str().unwrap());
+    let model_file = String::from("shadometer.mod");
 
-                    match db.process_json_file(&src) {
-                        Ok(_success) => count = count + 1,
-                        Err(error) => println!("Failed to process: {} -- {}", src, error),
-                    }
+    let (scanner_send, analyzer_recv) = mpsc::sync_channel::<Record>(8);
+    let (analyzer_send, logger_recv) = mpsc::sync_channel::<Record>(8);
 
-                    if args.output.is_none() {
-                        //println!("removed: {} ", src);
-                        fs::remove_file(src).unwrap();
-                    } else {
-                        //println!("moved: src: {}, dst: {} ", src, dst);
-                        fs::rename(src, dst).unwrap();
-                    }
-                    count = count + 1;
-                }
-            }
-        }
-        if count == 0 {
-            thread::sleep(sleep_interval);
-        }
-    }
+    let mut scanner = scanner::YafFiles::new(&args.sensor_id, &args.input, &dest_dir, scanner_send);
+    let mut analyzer = analyzer::Analyzer::new(analyzer_recv, analyzer_send, model_file);
+    let mut logger = logger::QuestDB::new(&args.questdb, logger_recv);
+
+    thread::spawn(move || {
+        let _ = logger.process_loop();
+    });
+
+    thread::spawn(move || {
+        let _ = analyzer.process_loop();
+    });
+
+    scanner.process_loop();
+
 }
