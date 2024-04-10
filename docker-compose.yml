@@ -58,9 +58,9 @@ services:
       # - QBD_LINE_UDP_ENABLED=false # Disable influxdb udp server
       # - QBD_LINE_UDP_NET_BIND_TO=0.0.0.0:9009 # influxdb udp server
 
-  shadowmeter_logger:
+  shadowmeter:
     image: fidelismachine/shadowmeter
-    container_name: shadowmeter_logger
+    container_name: shadowmeter
     restart: unless-stopped   
     environment:
       - SENSOR_ID=${SENSOR_ID}  
@@ -70,7 +70,7 @@ services:
     depends_on:
       - shadowdb
       - super_mediator       
-    command: /opt/shadowmeter/scripts/entrypoint-shadowmeter_logger.sh
+    command: /opt/shadowmeter/scripts/entrypoint-shadowmeter.sh
     
   grafana:
     image: grafana/grafana-oss

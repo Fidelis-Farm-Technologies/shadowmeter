@@ -16,7 +16,7 @@ COPY . .
 #
 # build shadowmeter_logger
 #
-WORKDIR /builder/shadowmeter_logger
+WORKDIR /builder/shadowmeter_engine
 RUN cargo build --release
 #
 # build libfixbuf

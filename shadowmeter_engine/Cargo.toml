@@ -1,5 +1,5 @@
 [package]
-name = "shadowmeter_logger"
+name = "shadowmeter"
 version = "0.1.0"
 edition = "2021"
 authors = ["randy@shadowmeter.io"]
