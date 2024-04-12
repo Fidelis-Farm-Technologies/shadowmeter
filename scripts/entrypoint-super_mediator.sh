@@ -1,8 +1,8 @@
 #!/bin/bash
 
-CONFIG_FILE=/opt/shadowmeter/etc/super_mediator_json.conf
+CONFIG_FILE=/opt/shadowmeter/etc/super_mediator.conf
 
-[ "$SM_EXPORT_MODE" == "TEXT" ] && CONFIG_FILE=/opt/shadowmeter/etc/super_mediator_text.conf
+[ "$SM_EXPORT_MODE" == "CACHE" ] && CONFIG_FILE=/opt/shadowmeter/etc/super_mediator_cache.conf
 
 
 if [ ! -d /opt/shadowmeter/spool/dpi ]; then

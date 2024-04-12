@@ -1,5 +1,5 @@
 #!/bin/bash
 
-docker build -t shadowmeter_base -f Dockerfile.base .
+docker build --no-cache  -t shadowmeter_base -f Dockerfile.base .
 
 
