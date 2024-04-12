@@ -2,15 +2,17 @@
 # ---------------------------------------------------------------
 #
 # ---------------------------------------------------------------
-FROM shadowmeter_base AS builder
+FROM shadowmeter_builder AS builder
 FROM bitnami/minideb:bookworm AS runner
+
 
 # ---------------------------------------------------------------
 #
 # ---------------------------------------------------------------
 
 COPY --from=builder /opt/shadowmeter /opt/shadowmeter
-RUN mkdir -p /opt/shadowmeter/scripts /opt/shadowmeter/etc
+RUN mkdir -p /opt/shadowmeter/scripts /opt/shadowmeter/etc \
+    /opt/shadowmeter/lib/pytorch
 WORKDIR /opt/shadowmeter
 COPY ./scripts/entrypoint-yaf.sh /opt/shadowmeter/scripts
 COPY ./scripts/entrypoint-super_mediator.sh /opt/shadowmeter/scripts
@@ -30,8 +32,11 @@ COPY --from=builder /builder/etc/super_mediator.conf /opt/shadowmeter/etc
 COPY --from=builder /builder/etc/super_mediator_cache.conf /opt/shadowmeter/etc
 COPY --from=builder /builder/etc/yafDPIRules.conf /opt/shadowmeter/etc
 COPY --from=builder /builder/etc/shadowmeter.logrotate /opt/shadowmeter/etc
+
+COPY --from=builder /base/libtorch/lib/* /opt/shadowmeter/lib/pytorch/
 RUN echo "/opt/shadowmeter/lib" > /etc/ld.so.conf.d/shadowmeter.conf
-RUN echo "/opt/shadowmeter/lib/yaf" >> /etc/ld.so.conf.d/shadowmeter.conf
+RUN echo "/opt/shadowmeter/lib/yaf" > /etc/ld.so.conf.d/yaf.conf
+RUN echo "/opt/shadowmeter/lib/pytorch" > /etc/ld.so.conf.d/pytorch.conf
 RUN ldconfig
 
 VOLUME /opt/shadowmeter/spool

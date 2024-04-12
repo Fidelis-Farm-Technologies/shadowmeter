@@ -145,6 +145,8 @@ impl YafFiles {
                 diat: flow["reverseAverageInterarrivalTime"].as_i64().unwrap(),
                 reason: flow["flowEndReason"].as_str().unwrap_or("").to_string(),
                 applabel: silk_app_label,
+                model: "".to_string(),
+                score: 0.0
             };
             self.output.send(record).expect("error sending record");
         }

@@ -5,42 +5,16 @@ FROM bitnami/minideb:bookworm as shadowmeter_base
 # ---------------------------------------------------------------
 RUN apt-get update
 RUN apt-get install -y build-essential xsltproc libglib2.0-dev automake \
-    autotools-dev libpcap-dev libpcre3-dev libssl-dev flex curl ca-certificates 
-# Get Rust and cargo
+    autotools-dev libpcap-dev libpcre3-dev libssl-dev flex curl \
+    libtorch-dev ca-certificates unzip
+
+# Install Rust and cargo
 RUN curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y
 RUN echo 'source $HOME/.cargo/env' >> $HOME/.bashrc
 ENV PATH=/root/.cargo/bin:$PATH
 
-WORKDIR /builder
-COPY . .
-#
-# build shadowmeter_logger
-#
-WORKDIR /builder/shadowmeter_engine
-RUN cargo build --release
-#
-# build libfixbuf
-#
-WORKDIR /builder/cert-nsa-libfixbuf
-RUN ./configure --prefix=/opt/shadowmeter --disable-tools 
-RUN make && make install
-#
-# Update the LD_LIBRARY_PATH
-#
-RUN echo "/opt/shadowmeter/lib" > /etc/ld.so.conf.d/shadowmeter.conf
-RUN ldconfig
-#
-# build yaf
-#
-WORKDIR /builder/cert-nsa-yaf
-#./configure --prefix=/opt/shadowmeter --with-ndpi  --enable-entropy --enable-applabel --enable-dpi
-RUN ./configure --prefix=/opt/shadowmeter --enable-entropy --enable-applabel --enable-dpi 
-RUN make && make install
-#
-# build super_mediator
-#
-WORKDIR /builder/cert-nsa-super_mediator
-RUN ./configure --prefix=/opt/shadowmeter 
-RUN make && make install
-
+# Install Pytorch C++ distribution libraries
+WORKDIR /base/
+RUN curl https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-2.2.2%2Bcpu.zip --output libtorch-cxx11-abi.zip
+RUN unzip libtorch-cxx11-abi.zip
 

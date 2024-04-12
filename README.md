@@ -12,8 +12,9 @@ This project is motivated by the following:
 
 ## Project Schedule
 - [&check;] Phase 1 - Build a Docker container with YAF, SuperMediator
-- [ ] Phase 2 - Implement an anomaly detection (AD) engine with PyTorch using Rust
-- [ ] Phase 3 - Integrate YAF, SuperMediator, and the AD engine as microservices
+- [&check;] Phase 2 - Implement an anomaly detection (AD) pipeline with the PyTorch
+- [ ] Phase 3 - Design and train a model with PyTorch
+- [ ] Phase 4 - Integrate YAF, SuperMediator, and the AD engine as microservices
 
 ## Docker Image
 

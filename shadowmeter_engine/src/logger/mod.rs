@@ -8,12 +8,13 @@ use questdb::{
 use std::sync::mpsc::{Receiver};
 
 use crate::flow::Record;
-pub struct QuestDB {
+
+pub struct Database {
     input: Receiver<Record>,
     db_sender: Sender,
 }
 
-impl QuestDB {
+impl Database {
     pub fn new(db_url: &str, input: Receiver<Record>) -> Self {
         let db_sender = Sender::from_conf(format!("tcp::addr={db_url};"));
         Self {

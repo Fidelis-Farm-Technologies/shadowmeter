@@ -24,6 +24,7 @@ pub struct Record {
     pub siat: i64,
     pub diat: i64,
     pub reason: String,
-    pub applabel: String
+    pub applabel: String,
+    pub model: String,
+    pub score: f64
 }
-

@@ -1,4 +1,4 @@
-version: '3.7'
+
 services:
   yaf:
     image: fidelismachine/shadowmeter
@@ -64,7 +64,7 @@ services:
     restart: unless-stopped   
     environment:
       - SENSOR_ID=${SENSOR_ID}  
-      - GF_USERS_DEFAULT_THEME=light
+      - DATABASE="shadowdb:9009"
     volumes:
       - /opt/shadowmeter/spool:/opt/shadowmeter/spool
     depends_on:
@@ -76,6 +76,8 @@ services:
     image: grafana/grafana-oss
     container_name: grafana
     restart: unless-stopped
+    environment:
+      - GF_USERS_DEFAULT_THEME=light
     user: "0:0"
     volumes:
       - /opt/shadowmeter/grafana:/var/lib/grafana
