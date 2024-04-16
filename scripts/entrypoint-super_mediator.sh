@@ -2,7 +2,7 @@
 
 CONFIG_FILE=/opt/shadowmeter/etc/super_mediator.conf
 
-[ "$SM_EXPORT_MODE" == "CACHE" ] && CONFIG_FILE=/opt/shadowmeter/etc/super_mediator_cache.conf
+[ "$SHADOWMETER_EXPORT_MODE" == "CACHE" ] && CONFIG_FILE=/opt/shadowmeter/etc/super_mediator_cache.conf
 
 
 if [ ! -d /opt/shadowmeter/spool/dpi ]; then

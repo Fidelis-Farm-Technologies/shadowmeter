@@ -10,8 +10,11 @@ services:
       - net_raw
       - sys_nice
     environment:
-      - YAF_INTERFACE=${YAF_INTERFACE}
-      # - YAF_PCAP_LIST=${YAF_PCAP_LIST}      
+      # For live capture, set the following the the monitoring interface
+      - SHADOWMETER_INTERFACE=${SHADOWMETER_INTERFACE}  
+      # Or, for offline PCAP analysis, set the followint to the path of 
+      # a file with a list of PCAP files, one per line
+      # - SHADOWMETER_PCAP_LIST=${YAF_PCAP_LIST}
     volumes:
       - /opt/shadowmeter/spool:/opt/shadowmeter/spool
       - /opt/shadowmeter/pcap:/opt/shadowmeter/pcap:ro
@@ -35,7 +38,6 @@ services:
       - 9000:9000
       - 9009:9009
       - 8812:8812
-      # - 9003:9003
     volumes:
       - /opt/shadowmeter/database:/root/.questdb
     environment:
@@ -43,8 +45,8 @@ services:
       - QDB_LOG_W_FILE_LEVEL=ERROR
       - QDB_LOG_W_HTTP_MIN_LEVEL=ERROR
       - QDB_SHARED_WORKER_COUNT=2 # Amount of worker threads
-      - QDB_PG_USER=${QDB_USERNAME} # postgresql user -> Configured in .env file
-      - QDB_PG_PASSWORD=${QDB_PASSWORD} # postgresql password -> Configured in .env file
+      - QDB_PG_USER=${SHADOWMETER_USERNAME} # postgresql user -> Configured in .env file
+      - QDB_PG_PASSWORD=${SHADOWMETER_PASSWORD} # postgresql password -> Configured in .env file
       - QDB_TELEMETRY_ENABLED=false # Disable telemetry
       # - QDB_HTTP_ENABLED=false # Disable http server gui and rest interface
       # - QDB_HTTP_BIND_TO=0.0.0.0:9000 # http server
@@ -63,8 +65,8 @@ services:
     container_name: shadowmeter
     restart: unless-stopped   
     environment:
-      - SENSOR_ID=${SENSOR_ID}  
-      - DATABASE="shadowdb:9009"
+      - SHADOWMETER_ID=${SHADOWMETER_ID}   # arbitrary string label
+      - SHADOWMETER_DATABASE=shadowdb:9009
     volumes:
       - /opt/shadowmeter/spool:/opt/shadowmeter/spool
     depends_on:
@@ -76,8 +78,6 @@ services:
     image: grafana/grafana-oss
     container_name: grafana
     restart: unless-stopped
-    environment:
-      - GF_USERS_DEFAULT_THEME=light
     user: "0:0"
     volumes:
       - /opt/shadowmeter/grafana:/var/lib/grafana

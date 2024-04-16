@@ -6,5 +6,5 @@ fi
 
 /opt/shadowmeter/bin/shadowmeter --input "/opt/shadowmeter/spool/flow/flow*.json" \
     --output /opt/shadowmeter/spool/processed \
-    --database ${DATABASE} \
-    --sensor-id ${SENSOR_ID}
+    --database ${SHADOWMETER_DATABASE} \
+    --sensor-id ${SHADOWMETER_ID}

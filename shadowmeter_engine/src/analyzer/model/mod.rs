@@ -6,9 +6,9 @@ use tch::{nn, nn::Module, nn::OptimizerConfig, Kind, Reduction, Tensor};
 use crate::flow::Record;
 
 pub trait PyTorchModel {
-    fn load_model(&mut self);
-    fn generate_features(&mut self, record: &Record);
-    fn generate_score(&mut self, features: &String);
+    fn load(&mut self);
+    fn features(&mut self, record: &Record);
+    fn predict(&mut self, features: &String);
 }
 
 
@@ -18,7 +18,7 @@ pub struct Example {
 }
 
 impl PyTorchModel for Example {
-    fn load_model(&mut self) {
+    fn load(&mut self) {
         self.valid_model = false;
         if ! self.file_name.is_empty() {
             // load file
@@ -26,12 +26,12 @@ impl PyTorchModel for Example {
         }
       
     }
-    fn generate_features(&mut self, _record: &Record) {
+    fn features(&mut self, _record: &Record) {
         if self.valid_model {
 
         }
     }
-    fn generate_score(&mut self, _features: &String) {
+    fn predict(&mut self, _features: &String) {
         if self.valid_model {
 
         }

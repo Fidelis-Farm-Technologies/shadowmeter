@@ -34,18 +34,19 @@ struct Args {
     sensor_id: String,
 }
 
-fn main() {
-    let args = Args::parse();
-    
-    let dest_dir = args.output.clone().unwrap_or("".to_string());
-    let model_file = args.model.clone().unwrap_or("".to_string());
-
+fn run_with_analyzer(
+    sensor_id: &String,
+    input: &String,
+    database: &String,
+    model_file: &String,
+    dest_dir: &String,
+) {
     let (scanner_send, analyzer_recv) = mpsc::sync_channel::<Record>(8);
     let (analyzer_send, logger_recv) = mpsc::sync_channel::<Record>(8);
 
-    let mut scanner = scanner::YafFiles::new(&args.sensor_id, &args.input, &dest_dir, scanner_send);
+    let mut scanner = scanner::YafFiles::new(&sensor_id, &input, &dest_dir, scanner_send);
     let mut analyzer = analyzer::Analyzer::new(analyzer_recv, analyzer_send, &model_file);
-    let mut logger = logger::Database::new(&args.database, logger_recv);
+    let mut logger = logger::Database::new(&database, logger_recv);
 
     thread::spawn(move || {
         let _ = analyzer.process_loop();
@@ -54,6 +55,38 @@ fn main() {
     thread::spawn(move || {
         let _ = logger.process_loop();
     });
-   
+
     scanner.process_loop();
+}
+
+fn run_without_analyzer(sensor_id: &String, input: &String, database: &String, dest_dir: &String) {
+    let (scanner_send, logger_recv) = mpsc::sync_channel::<Record>(8);
+
+    let mut scanner = scanner::YafFiles::new(&sensor_id, &input, &dest_dir, scanner_send);
+    let mut logger = logger::Database::new(&database, logger_recv);
+
+    thread::spawn(move || {
+        let _ = logger.process_loop();
+    });
+
+    scanner.process_loop();
+}
+
+fn main() {
+    let args = Args::parse();
+
+    let dest_dir = args.output.clone().unwrap_or("".to_string());
+    let model_file = args.model.clone().unwrap_or("".to_string());
+
+    if model_file.is_empty() {
+        run_without_analyzer(&args.sensor_id, &args.input, &args.database, &dest_dir);
+    } else {
+        run_with_analyzer(
+            &args.sensor_id,
+            &args.input,
+            &args.database,
+            &model_file,
+            &dest_dir,
+        );
+    }
 }
