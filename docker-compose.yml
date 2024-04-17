@@ -80,6 +80,6 @@ services:
     restart: unless-stopped
     user: "0:0"
     volumes:
-      - /opt/shadowmeter/grafana:/var/lib/grafana
+      - /opt/shadowmeter/grafana:/var/lib/grafana      
     ports:
       - 3000:3000
