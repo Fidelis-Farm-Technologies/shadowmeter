@@ -4,6 +4,6 @@
 [submodule "cert-nsa-yaf"]
 	path = cert-nsa-yaf
 	url = git@github.com:Fidelis-Farm-Technologies/cert-nsa-yaf.git
-[submodule "cert-super_mediator"]
-	path = cert-super_mediator
+[submodule "cert-nsa-super_mediator"]
+	path = cert-nsa-super_mediator
 	url = git@github.com:Fidelis-Farm-Technologies/cert-nsa-super_mediator.git
