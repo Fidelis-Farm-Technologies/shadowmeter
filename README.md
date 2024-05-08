@@ -1,7 +1,13 @@
 ![ShadowMeter](shadowmeter-dark.png#gh-dark-mode-only)
 ![ShadowMeter](shadowmeter-light.png#gh-light-mode-only)
 
-What happens when you implement a Network Anomaly Detection System (NADS) with [YAF](https://tools.netsa.cert.org/yaf/), [SuperMediator](https://tools.netsa.cert.org/super_mediator1/index.html), and an anomaly detection engine implemented with [PyTorch](https://www.pytorch.org/), and [Rust](https://www.rust-lang.org/)?  Well, let's prototype an experiment and find out.
+
+An Network Anomaly Detection System designed for IoT /OT and built with the following microservices:
+- [PyTorch](https://www.pytorch.org/)-based anomaly detection engine implemented with [Rust](https://www.rust-lang.org/).
+- [YAF](https://tools.netsa.cert.org/yaf/)
+- [SuperMediator](https://tools.netsa.cert.org/super_mediator1/index.html)
+- [QuestDB](https://questdb.io/download/)
+- [Grafana](https://grafana.com/oss/grafana/)
 
 ## Motivation
 This project is motivated by the following:
