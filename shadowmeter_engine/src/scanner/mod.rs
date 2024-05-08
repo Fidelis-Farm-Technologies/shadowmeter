@@ -114,9 +114,9 @@ impl YafFiles {
                 stime: start_time_ms,
                 ltime: last_time_ms,
                 proto: flow["protocolIdentifier"].as_i64().unwrap(),
-                saddr: flow["sourceIPv4Address"].to_string(),
+                saddr: flow["sourceIPv4Address"].as_str().unwrap().to_string(),
                 sport: flow["sourceTransportPort"].as_i64().unwrap(),
-                daddr: flow["destinationIPv4Address"].to_string(),
+                daddr: flow["destinationIPv4Address"].as_str().unwrap().to_string(),
                 dport: flow["destinationTransportPort"].as_i64().unwrap(),
                 sutcp: flow["unionTCPFlags"].as_str().unwrap_or("").to_string(),
                 dutcp: flow["reverseUnionTCPFlags"]

@@ -1,4 +1,3 @@
-
 services:
   yaf:
     image: fidelismachine/shadowmeter
@@ -14,10 +13,11 @@ services:
       - SHADOWMETER_INTERFACE=${SHADOWMETER_INTERFACE}  
       # Or, for offline PCAP analysis, set the followint to the path of 
       # a file with a list of PCAP files, one per line
-      # - SHADOWMETER_PCAP_LIST=${YAF_PCAP_LIST}
+      # - SHADOWMETER_PCAP_LIST=${SHADOWMETER_PCAP_LIST}
     volumes:
-      - /opt/shadowmeter/spool:/opt/shadowmeter/spool
-      - /opt/shadowmeter/pcap:/opt/shadowmeter/pcap:ro
+      - ${SHADOWMETER_VAR}/spool:/opt/shadowmeter/spool
+      # - ${SHADOWMETER_VAR}/pcap:/opt/shadowmeter/pcap:ro
+      - /data/darpa/training/:/opt/shadowmeter/pcap:ro
     depends_on:
       - super_mediator
     command: /opt/shadowmeter/scripts/entrypoint-yaf.sh
@@ -25,22 +25,21 @@ services:
   super_mediator:
     image: fidelismachine/shadowmeter
     container_name: super_mediator
-    restart: unless-stopped   
+    restart: unless-stopped  
     volumes:
-      - /opt/shadowmeter/spool:/opt/shadowmeter/spool
+      - ${SHADOWMETER_VAR}/spool:/opt/shadowmeter/spool
     command: /opt/shadowmeter/scripts/entrypoint-super_mediator.sh
 
-  shadowdb:
+  questdb:
     image: questdb/questdb
-    container_name: shadowdb
+    container_name: questdb
     restart: always
     ports:
       - 9000:9000
-      - 9009:9009
-      - 8812:8812
     volumes:
-      - /opt/shadowmeter/database:/root/.questdb
+      - ${SHADOWMETER_VAR}/questdb:/root/.questdb
     environment:
+      - QDB_HTTP_ENABLED=true     # NOTE: set this to true to enable the HTTP interface on port 9000
       - QDB_LOG_W_STDOUT_LEVEL=ERROR
       - QDB_LOG_W_FILE_LEVEL=ERROR
       - QDB_LOG_W_HTTP_MIN_LEVEL=ERROR
@@ -48,29 +47,21 @@ services:
       - QDB_PG_USER=${SHADOWMETER_USERNAME} # postgresql user -> Configured in .env file
       - QDB_PG_PASSWORD=${SHADOWMETER_PASSWORD} # postgresql password -> Configured in .env file
       - QDB_TELEMETRY_ENABLED=false # Disable telemetry
-      # - QDB_HTTP_ENABLED=false # Disable http server gui and rest interface
-      # - QDB_HTTP_BIND_TO=0.0.0.0:9000 # http server
-      # - QDB_HTTP_SECURITY_READONLY=true # HTTP read only mode
-      # - QDB_HTTP_MIN_ENABLED=false # Disable http health server
-      # - QDB_HTTP_MIN_BIND_TO=0.0.0.0:9003 # http health server
-      # - QDB_PG_ENABLED=false # Disable postgresql
-      # - QDB_PG_NET_BIND_TO=0.0.0.0:8812 # postgresql server
-      # - QBD_LINE_TCP_ENABLED=false # Disable influxdb tcp server
-      # - QBD_LINE_TCP_NET_BIND_TO=0.0.0.0:9009 # influxdb tcp server
-      # - QBD_LINE_UDP_ENABLED=false # Disable influxdb udp server
-      # - QBD_LINE_UDP_NET_BIND_TO=0.0.0.0:9009 # influxdb udp server
+      - QDB_HTTP_SECURITY_READONLY=true
+      - QBD_LINE_UDP_ENABLED=true
+      - QDB_HTTP_MIN_ENABLED=true
 
   shadowmeter:
     image: fidelismachine/shadowmeter
     container_name: shadowmeter
     restart: unless-stopped   
     environment:
-      - SHADOWMETER_ID=${SHADOWMETER_ID}   # arbitrary string label
-      - SHADOWMETER_DATABASE=shadowdb:9009
+      - SHADOWMETER_ID=${SHADOWMETER_ID}   # arbitrary label
+      - SHADOWMETER_DATABASE=questdb:9009
     volumes:
-      - /opt/shadowmeter/spool:/opt/shadowmeter/spool
+      - ${SHADOWMETER_VAR}/spool:/opt/shadowmeter/spool
     depends_on:
-      - shadowdb
+      - questdb
       - super_mediator       
     command: /opt/shadowmeter/scripts/entrypoint-shadowmeter.sh
     
@@ -80,6 +71,19 @@ services:
     restart: unless-stopped
     user: "0:0"
     volumes:
-      - /opt/shadowmeter/grafana:/var/lib/grafana      
+      - ${SHADOWMETER_VAR}/grafana:/var/lib/grafana
+    depends_on:
+      - nginx
+
+  nginx:
+    image: nginx:stable-alpine
+    container_name: nginx_proxy
+    restart: unless-stopped
+    volumes:
+      - ${SHADOWMETER_VAR}/nginx/log:/var/log/nginx    
+      - ${PWD}/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ${PWD}/nginx/html:/etc/nginx/html:ro
+      - ${PWD}/nginx/tls:/etc/nginx/tls:ro
     ports:
-      - 3000:3000
+      - 80:80
+      - 443:443    

@@ -7,7 +7,7 @@ use tch::{nn, nn::Module, nn::OptimizerConfig, Kind, Reduction, Tensor};
 use std::sync::mpsc::{Receiver, SyncSender};
 
 use crate::flow::Record;
-use crate::analyzer::model::Example;
+use crate::analyzer::model::MemStreamAutoEncoder;
 
 pub struct Analyzer {
     input: Receiver<Record>,
@@ -18,7 +18,7 @@ pub struct Analyzer {
 impl Analyzer {
     pub fn new(input: Receiver<Record>, output: SyncSender<Record>, model_file: &String) -> Self {
         println!("model file: {}", model_file);
-        let _model = Example {
+        let _model = MemStreamAutoEncoder {
             file_name : model_file.clone(),
             valid_model: false
         };

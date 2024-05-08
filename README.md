@@ -12,9 +12,8 @@ This project is motivated by the following:
 
 ## Project Schedule
 - [&check;] Phase 1 - Build a Docker container with YAF, SuperMediator
-- [&check;] Phase 2 - Implement an anomaly detection (AD) pipeline with the PyTorch
-- [ ] Phase 3 - Design and train a model with PyTorch
-- [ ] Phase 4 - Integrate YAF, SuperMediator, and the AD engine as microservices
+- [&check;] Phase 2 - Publish docker-compose (microservices) integrating YAF, SuperMediator, ShadowMeter, QuestDB, and Grafana
+- [&nbsp;] Phase 3 - Add autoencoder for anomaly detection using the PyTorch library
 
 ## Docker Image
 
