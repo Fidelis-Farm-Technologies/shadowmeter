@@ -65,13 +65,15 @@ services:
       - super_mediator       
     command: /opt/shadowmeter/scripts/entrypoint-shadowmeter.sh
     
-  grafana:
-    image: grafana/grafana-oss
-    container_name: grafana
+  shadowmeter_app:
+    image: fidelismachine/shadowmeter_app
+    container_name: shadowmeter_app
     restart: unless-stopped
     user: "0:0"
     volumes:
       - ${SHADOWMETER_VAR}/grafana:/var/lib/grafana
+    # - ${SHADOWMETER_VAR}/provisioning:/etc/grafana/provisioning
+
     depends_on:
       - nginx
 
