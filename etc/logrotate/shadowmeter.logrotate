@@ -1,0 +1,8 @@
+/var/shadowmeter/spool/flow/*.json /var/shadowmeter/spool/flow/*.txt {
+    daily
+    missingok
+    rotate 7
+    nocompress
+    sharedscripts
+}
+
