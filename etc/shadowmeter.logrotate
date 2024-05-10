@@ -1,8 +1,0 @@
-/opt/shadowmeter/spool/flow/*.json /opt/shadowmeter/spool/flow/*.txt {
-    daily
-    missingok
-    rotate 7
-    nocompress
-    sharedscripts
-}
-

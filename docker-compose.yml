@@ -11,15 +11,11 @@ services:
     environment:
       # For live capture, set the following the the monitoring interface
       - SHADOWMETER_INTERFACE=${SHADOWMETER_INTERFACE}  
-      # Or, for offline PCAP analysis, set the followint to the path of 
+      # Or, for offline PCAP analysis, set the followint to the path of` 
       # a file with a list of PCAP files, one per line
       # - SHADOWMETER_PCAP_LIST=${SHADOWMETER_PCAP_LIST}
     volumes:
-      - ${SHADOWMETER_VAR}/spool:/opt/shadowmeter/spool
-      # - ${SHADOWMETER_VAR}/pcap:/opt/shadowmeter/pcap:ro
-      - /data/darpa/training/:/opt/shadowmeter/pcap:ro
-    depends_on:
-      - super_mediator
+      - ./var/shadowmeter/spool:/var/shadowmeter/spool
     command: /opt/shadowmeter/scripts/entrypoint-yaf.sh
 
   super_mediator:
@@ -27,29 +23,10 @@ services:
     container_name: super_mediator
     restart: unless-stopped  
     volumes:
-      - ${SHADOWMETER_VAR}/spool:/opt/shadowmeter/spool
+      - ./var/shadowmeter/spool:/var/shadowmeter/spool
+    depends_on:
+      - yaf      
     command: /opt/shadowmeter/scripts/entrypoint-super_mediator.sh
-
-  questdb:
-    image: questdb/questdb
-    container_name: questdb
-    restart: always
-    ports:
-      - 9000:9000
-    volumes:
-      - ${SHADOWMETER_VAR}/questdb:/root/.questdb
-    environment:
-      - QDB_HTTP_ENABLED=true     # NOTE: set this to true to enable the HTTP interface on port 9000
-      - QDB_LOG_W_STDOUT_LEVEL=ERROR
-      - QDB_LOG_W_FILE_LEVEL=ERROR
-      - QDB_LOG_W_HTTP_MIN_LEVEL=ERROR
-      - QDB_SHARED_WORKER_COUNT=2 # Amount of worker threads
-      - QDB_PG_USER=${SHADOWMETER_USERNAME} # postgresql user -> Configured in .env file
-      - QDB_PG_PASSWORD=${SHADOWMETER_PASSWORD} # postgresql password -> Configured in .env file
-      - QDB_TELEMETRY_ENABLED=false # Disable telemetry
-      - QDB_HTTP_SECURITY_READONLY=true
-      - QBD_LINE_UDP_ENABLED=true
-      - QDB_HTTP_MIN_ENABLED=true
 
   shadowmeter:
     image: fidelismachine/shadowmeter
@@ -57,23 +34,43 @@ services:
     restart: unless-stopped   
     environment:
       - SHADOWMETER_ID=${SHADOWMETER_ID}   # arbitrary label
-      - SHADOWMETER_DATABASE=questdb:9009
+      - SHADOWMETER_DATABASE=${SHADOWMETER_DATABASE}
     volumes:
-      - ${SHADOWMETER_VAR}/spool:/opt/shadowmeter/spool
+      - ./var/shadowmeter/spool:/var/shadowmeter/spool
     depends_on:
       - questdb
       - super_mediator       
     command: /opt/shadowmeter/scripts/entrypoint-shadowmeter.sh
     
+  questdb:
+    image: questdb/questdb
+    container_name: questdb
+    restart: always
+    ports:
+      - 9000:9000
+    volumes:
+      - ./var/questdb:/root/.questdb
+    environment:
+      - QDB_HTTP_ENABLED=true                  # NOTE: set this to true to enable the HTTP interface on port 9000
+      - QDB_LOG_W_STDOUT_LEVEL=ERROR
+      - QDB_LOG_W_FILE_LEVEL=ERROR
+      - QDB_LOG_W_HTTP_MIN_LEVEL=ERROR
+      - QDB_SHARED_WORKER_COUNT=2               # Amount of worker threads
+      - QDB_PG_USER=${SHADOWMETER_USERNAME}     # postgresql user -> Configured in .env file
+      - QDB_PG_PASSWORD=${SHADOWMETER_PASSWORD} # postgresql password -> Configured in .env file
+      - QDB_TELEMETRY_ENABLED=false             # Disable telemetry
+      - QDB_HTTP_SECURITY_READONLY=true
+      - QBD_LINE_UDP_ENABLED=true
+      - QDB_HTTP_MIN_ENABLED=true
+
   shadowmeter_app:
     image: fidelismachine/shadowmeter_app
     container_name: shadowmeter_app
     restart: unless-stopped
     user: "0:0"
     volumes:
-      - ${SHADOWMETER_VAR}/grafana:/var/lib/grafana
-    # - ${SHADOWMETER_VAR}/provisioning:/etc/grafana/provisioning
-
+      - ./var/grafana:/var/lib/grafana
+    # - ./grafana/provisioning:/etc/grafana/provisioning
     depends_on:
       - nginx
 
@@ -82,10 +79,10 @@ services:
     container_name: nginx_proxy
     restart: unless-stopped
     volumes:
-      - ${SHADOWMETER_VAR}/nginx/log:/var/log/nginx    
-      - ${PWD}/nginx/conf.d:/etc/nginx/conf.d:ro
-      - ${PWD}/nginx/html:/etc/nginx/html:ro
-      - ${PWD}/nginx/tls:/etc/nginx/tls:ro
+      - ./var/log/nginx:/var/log/nginx    
+      - ./etc/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./etc/nginx/html:/etc/nginx/html:ro
+      - ./etc/nginx/tls:/etc/nginx/tls:ro
     ports:
       - 80:80
       - 443:443    

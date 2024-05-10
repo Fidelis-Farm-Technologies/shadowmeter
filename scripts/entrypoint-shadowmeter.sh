@@ -1,10 +1,10 @@
 #!/bin/bash
 
-if [ ! -d  /opt/shadowmeter/spool/processed ]; then
-    mkdir -p  /opt/shadowmeter/spool/processed
+if [ ! -d  /var/shadowmeter/spool/processed ]; then
+    mkdir /var/shadowmeter/spool/processed
 fi
 
-/opt/shadowmeter/bin/shadowmeter --input "/opt/shadowmeter/spool/flow/flow*.json" \
-    --output /opt/shadowmeter/spool/processed \
+/opt/shadowmeter/bin/shadowmeter --input "/var/shadowmeter/spool/flow/flow*.json" \
+    --output /var/shadowmeter/spool/processed \
     --database ${SHADOWMETER_DATABASE} \
     --sensor-id ${SHADOWMETER_ID}

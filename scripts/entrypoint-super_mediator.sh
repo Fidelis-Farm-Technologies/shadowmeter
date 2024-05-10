@@ -4,23 +4,26 @@ CONFIG_FILE=/opt/shadowmeter/etc/super_mediator.conf
 
 if [ "$SHADOWMETER_EXPORT_MODE" == "CACHE" ]; then
     CONFIG_FILE=/opt/shadowmeter/etc/super_mediator_cache.conf
-
-    if [ ! -d /opt/shadowmeter/spool/dpi ]; then
-        mkdir -p /opt/shadowmeter/spool/dpi
+    if [ ! -d /var/shadowmeter/spool/dpi ]; then
+        mkdir /var/shadowmeter/spool/dpi
     fi
-    if [ ! -d /opt/shadowmeter/spool/dns ]; then
-        mkdir -p /opt/shadowmeter/spool/dns
+    if [ ! -d /var/shadowmeter/spool/dns ]; then
+        mkdir /var/shadowmeter/spool/dns
     fi
-    if [ ! -d /opt/shadowmeter/spool/tls ]; then
-        mkdir -p /opt/shadowmeter/spool/tls
+    if [ ! -d /var/shadowmeter/spool/tls ]; then
+        mkdir /var/shadowmeter/spool/tls
     fi
 fi
 
-if [ ! -d /opt/shadowmeter/spool/flow ]; then
-    mkdir -p /opt/shadowmeter/spool/flow
+if [ ! -d /var/shadowmeter/spool/yaf ]; then
+    mkdir /var/shadowmeter/spool/yaf
 fi
-if [ ! -d /opt/shadowmeter/spool/processed ]; then
-    mkdir -p /opt/shadowmeter/spool/processed
+
+if [ ! -d /var/shadowmeter/spool/flow ]; then
+    mkdir /var/shadowmeter/spool/flow
+fi
+if [ ! -d /var/shadowmeter/spool/processed ]; then
+    mkdir /var/shadowmeter/spool/processed
 fi
 
 /opt/shadowmeter/bin/super_mediator --config ${CONFIG_FILE}
