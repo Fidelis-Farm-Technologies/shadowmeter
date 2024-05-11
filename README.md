@@ -23,11 +23,11 @@ This project is motivated by the following:
 
 ## Concept of Operation
 ![ShadowMeter](shadowmeter-block-diagram.png)
-1. YAF capture live traffic and generates IPFIX records
-2. SuperMediator processed IPF records and converts them to JSON
-3. ShadowMeter process JSON records by analyzing flow records and inserting them into QuestDB
+1. YAF captures live traffic and generates IPFIX records
+2. SuperMediator processes IPF records and converts them to JSON
+3. ShadowMeter processes JSON records by analyzing flow records and inserting them into QuestDB
 4. Purpose-built Grafana application enables exploration and visualation of network flow traffic
-5. Eventually, archive flow records in [Parquet format](https://arrow.apache.org/docs/python/parquet.html).
+5. Eventually, archive flow records in [Parquet format](https://arrow.apache.org/docs/python/parquet.html) for long term storage and retrieval.
 ## Docker Image
 
 [DockerHub](https://hub.docker.com/r/fidelismachine/shadowmeter)
