@@ -60,7 +60,7 @@ Finally, review then run Docker Compose with the docker-compose.yml file include
 # docker-compose up -d
 ```
 
-NOTE: All variable file are mapped to ./var in the local direction.  This includes directories for spooling transient files and Grafana.
+NOTE: All variable file are mapped to ./var in the local direction.  This includes directories for spooling transient files, QuestDB, and Grafana.
 
 ## Exploring the Database
 The [QuestDB Web Console](https://questdb.io/docs/web-console/) makes it easy to explore and chart queries using SQL. All flow records are inserted in the flow table. To connect to to the QuestDB Web Console, first set the following environment variable in the docker-compose.yml:
@@ -100,7 +100,8 @@ See the [QuestDb documentation](https://questdb.io/docs/reference/sql/overview/)
 | timestamp | timestamp | record insertion time      |
 
 ## ShadowMeter Application
-The ShadowMeter Project includes a [custom Grafana-based docker image](https://hub.docker.com/repository/docker/fidelismachine/shadowmeter_app/general) for visualizing and analyzing flow-base network traffic.  
+![ShadowMeter APp](shadowmeter-app.png)
+The ShadowMeter Project includes a [custom Grafana-based docker image](https://hub.docker.com/repository/docker/fidelismachine/shadowmeter_app/general) for visualizing and analyzing flow-base network traffic. Please note, the dashboard are currently under development.
 
 See the shadowmeter_app section in docker-compose.yml file included in this project for details, then refer to the [QuestDB - Grafana tutorial](https://questdb.io/blog/time-series-monitoring-dashboard-grafana-questdb/) to learn how to interact and build custom dashboard.
 
