@@ -50,9 +50,9 @@ SHADOWMETER_DATABASE="questdb:9009"
 ```
 - SHADOWMETER_INTERFACE -- monitoring network interface
 - SHADOWMETER_SENSOR_ID -- unique sensor id label that will appear in the database
-- SHADOWMETER_USERNAME --  QuestDB username 
+- SHADOWMETER_USERNAME -- QuestDB username 
 - SHADOWMETER_PASSWORD -- QuestDB password
-- SHADOWMETER_DATABASE - QuestDB hostname and port number
+- SHADOWMETER_DATABASE -- QuestDB hostname and port number
 
 Finally, review then run Docker Compose with the docker-compose.yml file included in this repository. 
 
