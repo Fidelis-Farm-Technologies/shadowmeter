@@ -34,7 +34,10 @@ This project is motivated by the following:
 
 ````
 docker pull fidelismachine/shadowmeter:latest
+docker pull fidelismachine/shadowmeter_app:latest
 ````
+- fidelismachine/shadowmeter - includes all the shadowmeter microservices except the grafana
+- fidelismachine/shadowmeter_app - grafana-based microservice
 ---
 ## Quick Start
 Although the anomaly detection (pytorch) functionality is not implemented (yet), you can still run ShadowMeter as a network monitoring probe.  First, create an .env file with the following settings:
