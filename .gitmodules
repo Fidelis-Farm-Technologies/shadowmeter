@@ -7,3 +7,6 @@
 [submodule "cert-nsa-super_mediator"]
 	path = cert-nsa-super_mediator
 	url = git@github.com:Fidelis-Farm-Technologies/cert-nsa-super_mediator.git
+[submodule "MemStream"]
+	path = MemStream
+	url = https://github.com/Stream-AD/MemStream
