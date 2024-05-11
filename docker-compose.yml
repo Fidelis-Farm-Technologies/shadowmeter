@@ -1,6 +1,6 @@
 services:
   yaf:
-    image: fidelismachine/shadowmeter
+    image: fidelismachine/shadowmeter:latest
     container_name: yaf
     restart: unless-stopped      
     network_mode: host
@@ -19,7 +19,7 @@ services:
     command: /opt/shadowmeter/scripts/entrypoint-yaf.sh
 
   super_mediator:
-    image: fidelismachine/shadowmeter
+    image: fidelismachine/shadowmeter:latest
     container_name: super_mediator
     restart: unless-stopped  
     volumes:
@@ -29,7 +29,7 @@ services:
     command: /opt/shadowmeter/scripts/entrypoint-super_mediator.sh
 
   shadowmeter:
-    image: fidelismachine/shadowmeter
+    image: fidelismachine/shadowmeter:latest
     container_name: shadowmeter
     restart: unless-stopped   
     environment:
@@ -64,7 +64,7 @@ services:
       - QDB_HTTP_MIN_ENABLED=true
 
   shadowmeter_app:
-    image: fidelismachine/shadowmeter_app
+    image: fidelismachine/shadowmeter_app:latest
     container_name: shadowmeter_app
     restart: unless-stopped
     user: "0:0"
