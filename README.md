@@ -23,10 +23,10 @@ This project is motivated by the following:
 
 ## Concept of Operation
 ![ShadowMeter](shadowmeter-block-diagram.png)
-1. YAF captures live traffic and generates IPFIX records
-2. SuperMediator processes IPF records and converts them to JSON
-3. ShadowMeter processes JSON records by analyzing flow records and inserting them into QuestDB
-4. Purpose-built Grafana application enables exploration and visualation of network flow traffic
+1. YAF captures live traffic and generates IPFIX records.
+2. SuperMediator processes IPFIX records and converts them to JSON.
+3. ShadowMeter analyzes flow records and inserts them into QuestDB.
+4. Purpose-built Grafana application enables exploration and visualation of network flow traffic.
 5. Eventually, archive flow records in [Parquet format](https://arrow.apache.org/docs/python/parquet.html) for long term storage and retrieval.
 ## Docker Image
 
@@ -101,7 +101,7 @@ See the [QuestDb documentation](https://questdb.io/docs/reference/sql/overview/)
 
 ## ShadowMeter Application
 ![ShadowMeter App](shadowmeter-app.png)
-The ShadowMeter Project includes a [custom Grafana-based docker image](https://hub.docker.com/repository/docker/fidelismachine/shadowmeter_app/general) for visualizing and analyzing flow-base network traffic. Please note, the dashboard are currently under development.
+The ShadowMeter Project includes a [custom Grafana-based docker image](https://hub.docker.com/repository/docker/fidelismachine/shadowmeter_app/general) for visualizing and analyzing flow-based network traffic. Please note, the dashboard are currently under development.
 
 See the shadowmeter_app section in docker-compose.yml file included in this project for details, then refer to the [QuestDB - Grafana tutorial](https://questdb.io/blog/time-series-monitoring-dashboard-grafana-questdb/) to learn how to interact and build custom dashboard.
 
