@@ -100,7 +100,7 @@ See the [QuestDb documentation](https://questdb.io/docs/reference/sql/overview/)
 | timestamp | timestamp | record insertion time      |
 
 ## ShadowMeter Application
-![ShadowMeter APp](shadowmeter-app.png)
+![ShadowMeter App](shadowmeter-app.png)
 The ShadowMeter Project includes a [custom Grafana-based docker image](https://hub.docker.com/repository/docker/fidelismachine/shadowmeter_app/general) for visualizing and analyzing flow-base network traffic. Please note, the dashboard are currently under development.
 
 See the shadowmeter_app section in docker-compose.yml file included in this project for details, then refer to the [QuestDB - Grafana tutorial](https://questdb.io/blog/time-series-monitoring-dashboard-grafana-questdb/) to learn how to interact and build custom dashboard.
