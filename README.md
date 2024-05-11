@@ -105,6 +105,10 @@ The ShadowMeter Project includes a [custom Grafana-based docker image](https://h
 
 See the shadowmeter_app section in docker-compose.yml file included in this project for details, then refer to the [QuestDB - Grafana tutorial](https://questdb.io/blog/time-series-monitoring-dashboard-grafana-questdb/) to learn how to interact and build custom dashboard.
 
+Note: the default login is:<br>
+
+&emsp;username: admin<br>
+&emsp;password: admin<br>
 
 ## Community
 
