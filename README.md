@@ -19,7 +19,7 @@ This project is motivated by the following:
 ## Project Schedule
 - [&check;] Phase 1 - Build a Docker container images with YAF, SuperMediator, ShadowMeter (analyzer), and Grafana-based application.
 - [&check;] Phase 2 - Publish a fully functional (less anomaly detection) network monitoring solution using docker-compose with YAF, SuperMediator, ShadowMeter, QuestDB, and Grafana.
-- [&nbsp;] Phase 3 - Add anomaly detection to ShadowMeter using the PyTorch library
+- [&nbsp;] Phase 3 - Implement and integrate a form of [MemStream](https://github.com/Stream-AD/MemStream) in Rust using the PyTorch library.
 
 ## Concept of Operation
 ![ShadowMeter](shadowmeter-block-diagram.png)
