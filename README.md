@@ -35,6 +35,7 @@ This project is motivated by the following:
 ````
 docker pull fidelismachine/shadowmeter:latest
 docker pull fidelismachine/shadowmeter_app:latest
+docker pull fidelismachine/shadowmeter_nginx:latest
 ````
 - fidelismachine/shadowmeter - includes all the shadowmeter microservices except the grafana
 - fidelismachine/shadowmeter_app - grafana-based microservice
