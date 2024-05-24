@@ -2,7 +2,7 @@
 ![ShadowMeter](shadowmeter-light.png#gh-light-mode-only)
 
 
-An Network Anomaly Detection System designed for IoT /OT and built with the following microservices:
+A microservices-based Network Anomaly Detection System designed for IoT/OT:
 - [YAF](https://tools.netsa.cert.org/yaf/)
 - [SuperMediator](https://tools.netsa.cert.org/super_mediator1/index.html)
 - [ShadowMeter](https://github.com/Fidelis-Farm-Technologies/shadowmeter) ([PyTorch](https://www.pytorch.org/)-based anomaly detection engine implemented with [Rust](https://www.rust-lang.org/)).
