@@ -70,7 +70,8 @@ services:
     user: "0:0"
     volumes:
       - ./var/grafana:/var/lib/grafana
-    # - ./grafana/provisioning:/etc/grafana/provisioning
+    # uncomment below to enable custom provisioning
+    #- ./grafana/provisioning:/etc/grafana/provisioning
 
   shadowmeter_nginx:
     image: fidelismachine/shadowmeter_nginx:latest
@@ -78,6 +79,10 @@ services:
     restart: unless-stopped 
     volumes:
       - ./var/log/nginx:/var/log/nginx
+      # uncomment below to enable signed certificates
+      #- ./ssl.crt:/etc/nginx/ssl.crt
+      #- ./ssl.key:/etc/nginx/ssl.key      
+  
     ports:
       - 80:80/tcp
       - 443:443/tcp  

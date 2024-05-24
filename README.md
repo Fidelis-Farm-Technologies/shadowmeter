@@ -39,7 +39,7 @@ docker pull fidelismachine/shadowmeter_app:latest
 - fidelismachine/shadowmeter - includes all the shadowmeter microservices except the grafana
 - fidelismachine/shadowmeter_app - grafana-based microservice
 ---
-## Quick Start
+## Quick Start with Docker Compose
 Although the anomaly detection (pytorch) functionality is not implemented (yet), you can still run ShadowMeter as a network monitoring probe.  First, create an .env file with the following settings:
 ```
 SHADOWMETER_INTERFACE="eno1"
@@ -109,6 +109,21 @@ Note: the default login is:<br>
 
 &emsp;username: admin<br>
 &emsp;password: admin<br>
+
+### ShadowMeter Application TLS
+ShadowMeter App includes an automatically generated self-signed certificate for TLS. To use a certificate signed by a Certificate Authority (CA), map the certificate files in docker-compose.yml. For example, see the shadowmeter_nginx section in docker-compose.yml:
+```
+  ...
+  shadowmeter_nginx:
+    image: fidelismachine/shadowmeter_nginx:latest
+    container_name: shadowmeter_nginx
+    restart: unless-stopped 
+    volumes:
+      - ./var/log/nginx:/var/log/nginx
+      # map the signed certificates below
+      - ./ssl.crt:/etc/nginx/ssl.crt
+      - ./ssl.key:/etc/nginx/ssl.key      
+```
 
 ## Community
 
