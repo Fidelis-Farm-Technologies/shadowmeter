@@ -43,13 +43,13 @@ docker pull fidelismachine/shadowmeter_app:latest
 Although the anomaly detection (pytorch) functionality is not implemented (yet), you can still run ShadowMeter as a network monitoring probe.  First, create an .env file with the following settings:
 ```
 SHADOWMETER_INTERFACE="eno1"
-SHADOWMETER_SENSOR_ID="crozet"
+SHADOWMETER_ID="crozet"
 SHADOWMETER_USERNAME="admin"
 SHADOWMETER_PASSWORD="quest"
 SHADOWMETER_DATABASE="questdb:9009"
 ```
 - SHADOWMETER_INTERFACE -- monitoring network interface
-- SHADOWMETER_SENSOR_ID -- unique sensor id label that will appear in the database
+- SHADOWMETER_ID -- unique sensor id label that will appear in the database
 - SHADOWMETER_USERNAME -- QuestDB username 
 - SHADOWMETER_PASSWORD -- QuestDB password
 - SHADOWMETER_DATABASE -- QuestDB hostname and port number

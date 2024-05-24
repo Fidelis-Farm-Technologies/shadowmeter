@@ -37,6 +37,9 @@ ENV LD_LIBRARY_PATH=${LIBTORCH}/lib:$LD_LIBRARY_PATH
 ENV LIBTORCH_BYPASS_VERSION_CHECK=1
 WORKDIR /builder/shadowmeter_engine
 RUN cargo build --release
+#
+# copy etc files
+#
 
 
 

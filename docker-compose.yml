@@ -72,17 +72,17 @@ services:
       - ./var/grafana:/var/lib/grafana
     # - ./grafana/provisioning:/etc/grafana/provisioning
     depends_on:
-      - nginx
+      - shadowmeter_nginx
 
-  nginx:
-    image: nginx:stable-alpine
-    container_name: nginx_proxy
+  shadowmeter_nginx:
+    image: fidelismachine/shadowmeter_nginx:latest
+    container_name: shadowmeter_nginx
     restart: unless-stopped
     volumes:
-      - ./var/log/nginx:/var/log/nginx    
-      - ./etc/nginx/conf.d:/etc/nginx/conf.d:ro
-      - ./etc/nginx/html:/etc/nginx/html:ro
-      - ./etc/nginx/tls:/etc/nginx/tls:ro
+      - ./var/log/nginx:/var/log/nginx
+      # uncomment below to setup TLS
+      #- ./etc/nginx/conf.d:/etc/nginx/conf.d/ssl.conf:ro
+      #- ./etc/nginx/tls:/etc/nginx/tls:ro
     ports:
       - 80:80
       - 443:443    
