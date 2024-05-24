@@ -27,7 +27,7 @@ This project is motivated by the following:
 2. SuperMediator processes IPFIX records and converts them to JSON.
 3. ShadowMeter analyzes flow records and inserts them into QuestDB.
 4. Purpose-built Grafana application enables exploration and visualation of network flow traffic.
-5. Eventually, archive flow records in [Parquet format](https://arrow.apache.org/docs/python/parquet.html) for long term storage and retrieval.
+5. Archive flow records in [Parquet format](https://arrow.apache.org/docs/python/parquet.html) using QuestDB for long term storage and retrieval.
 ## Docker Image
 
 [DockerHub](https://hub.docker.com/r/fidelismachine/shadowmeter)
