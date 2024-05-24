@@ -101,7 +101,7 @@ See the [QuestDb documentation](https://questdb.io/docs/reference/sql/overview/)
 
 ## ShadowMeter Application
 ![ShadowMeter App](shadowmeter-app.png)
-The ShadowMeter Project includes a [custom Grafana-based docker image](https://hub.docker.com/repository/docker/fidelismachine/shadowmeter_app/general) for visualizing and analyzing flow-based network traffic. Please note, the dashboard are currently under development.
+The ShadowMeter Project includes a [custom Grafana-based docker image](https://hub.docker.com/repository/docker/fidelismachine/shadowmeter_app/general) (aka shadowmeter_app) for visualizing and analyzing flow-based network traffic. Please note, the dashboard are currently under development.
 
 See the shadowmeter_app section in docker-compose.yml file included in this project for details, then refer to the [QuestDB - Grafana tutorial](https://questdb.io/blog/time-series-monitoring-dashboard-grafana-questdb/) to learn how to interact and build custom dashboard.
 
