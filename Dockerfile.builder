@@ -19,13 +19,15 @@ RUN ldconfig
 # build yaf
 #
 WORKDIR /builder/cert-nsa-yaf
-RUN ./configure --prefix=/opt/shadowmeter --enable-entropy --enable-applabel --enable-dpi 
+RUN git checkout ndpi-4.8
+RUN ./configure --prefix=/opt/shadowmeter --enable-entropy --enable-applabel --enable-dpi --with-ndpi 
 RUN make && make install
 #
 # build super_mediator
 #
 WORKDIR /builder/cert-nsa-super_mediator
-RUN ./configure --prefix=/opt/shadowmeter 
+RUN git checkout ndpi-4.8
+RUN ./configure --prefix=/opt/shadowmeter LIBS=-lndpi
 RUN make && make install
 #
 # build shadowmeter_engine
@@ -37,9 +39,6 @@ ENV LD_LIBRARY_PATH=${LIBTORCH}/lib:$LD_LIBRARY_PATH
 ENV LIBTORCH_BYPASS_VERSION_CHECK=1
 WORKDIR /builder/shadowmeter_engine
 RUN cargo build --release
-#
-# copy etc files
-#
 
 
 
