@@ -360,6 +360,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "geoip2"
+version = "0.1.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6514903b5164a5d655fcd0cb1d87de8ee7a8de0da4d95b78b8d08de4df7bb6f6"
+dependencies = [
+ "geoip2-codegen",
+]
+
+[[package]]
+name = "geoip2-codegen"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1f2cac58ebe4e3057db62922453a19143a41aa66e7e5207a06cb07b975c5694b"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "getrandom"
 version = "0.2.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -817,6 +837,7 @@ dependencies = [
  "chrono",
  "clap",
  "csv",
+ "geoip2",
  "glob",
  "lazy_static",
  "questdb-rs",

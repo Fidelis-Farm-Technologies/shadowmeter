@@ -12,6 +12,12 @@ use std::sync::mpsc::Receiver;
 
 use crate::flow::Record;
 
+const PRIVATE_IP_RANGE: [&'static str; 18] = [
+    "10.", "192.168.", "172.16.", "172.17.", "172.18.", "172.19.", "172.20.", "172.21.", "172.22.",
+    "172.23.", "172.24.", "172.25.", "172.26.", "172.27.", "172.28.", "172.29.", "172.30.",
+    "172.31.",
+];
+
 pub struct Database {
     input: Receiver<Record>,
     db_sender: Sender,
@@ -28,13 +34,20 @@ impl Database {
         }
     }
 
-    pub fn process_with_asn(&mut self, data: Vec<u8>) {
-        println!("ASN tagging: enabled");
-        let geolite_asn = Reader::<ASN>::from_bytes(&data).unwrap();
+    pub fn is_private_address(&mut self, ipaddr: &String) -> bool {
+        for i in 0..PRIVATE_IP_RANGE.len() {
+            if ipaddr.starts_with(PRIVATE_IP_RANGE[i]) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-        loop {
-            let mut record = self.input.recv().unwrap();
-
+    pub fn tag_asn(&mut self, record: &mut Record, geolite_asn: &Reader<ASN>) {
+        if self.is_private_address(&record.saddr) {
+            record.sasn = 0;
+            record.sasnorg = "private ip".to_string();
+        } else {
             // lookup saddr ASN
             let mut ipaddr = IpAddr::from_str(record.saddr.as_str());
             match ipaddr {
@@ -51,9 +64,13 @@ impl Database {
                 }
                 Err(_) => (),
             }
-
-            // lookup daddr ASN
-            ipaddr = IpAddr::from_str(record.daddr.as_str());
+        }
+        if self.is_private_address(&record.daddr) {
+            record.dasn = 0;
+            record.dasnorg = "private ip".to_string();
+        } else {
+            // lookup saddr ASN
+            let mut ipaddr = IpAddr::from_str(record.daddr.as_str());
             match ipaddr {
                 Ok(ip) => {
                     let mut query = geolite_asn.lookup(ip);
@@ -68,6 +85,17 @@ impl Database {
                 }
                 Err(_) => (),
             }
+        }
+    }
+
+    pub fn process_with_asn(&mut self, data: Vec<u8>) {
+        println!("ASN tagging: enabled");
+        let geolite_asn = Reader::<ASN>::from_bytes(&data).unwrap();
+
+        loop {
+            let mut record = self.input.recv().unwrap();
+
+            self.tag_asn(&mut record, &geolite_asn);
 
             let _ = self.insert_record(record);
         }
@@ -84,12 +112,13 @@ impl Database {
     pub fn process_loop(&mut self) -> Result<()> {
         let buffer = std::fs::read(self.geolite_file.to_string());
         match buffer {
-            Ok(data) => { 
+            Ok(data) => {
                 if data.len() > 0 {
                     Ok(self.process_with_asn(data))
                 } else {
                     Ok(self.process_without_asn())
-                }},
+                }
+            }
             Err(e) => Ok(self.process_without_asn()),
         }
     }
