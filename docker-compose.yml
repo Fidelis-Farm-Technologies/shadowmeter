@@ -37,6 +37,7 @@ services:
       - SHADOWMETER_DATABASE=${SHADOWMETER_DATABASE}
     volumes:
       - ./var/shadowmeter/spool:/var/shadowmeter/spool
+      - ./var/shadowmeter/GeoLite2-ASN.mmdb:/var/shadowmeter/GeoLite2-ASN.mmdb
     depends_on:
       - questdb
       - super_mediator       

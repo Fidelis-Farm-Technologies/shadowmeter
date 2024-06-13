@@ -82,23 +82,30 @@ See the [QuestDb documentation](https://questdb.io/docs/reference/sql/overview/)
 | sport | long      | src port number|
 | daddr | string    | dst IP address |
 | dport | long      | dst port number|
+| sasn | long       | src ASN |
+| sasnorg | string  | src ASN organization|
+| dasn | long       | dst ASN |
+| dasnorg | string  | dst ASN organization |
 | sutcp | string    | union of src TCP flags |
 | dutcp | string    | union of dst TCP flags |
 | sitcp | string    | initial src TCP flags |
 | ditcp | string    | initial dst TCP flags |
-| spd | string    | sequence of direction of 1st eight packets |
-| vlan | long      | VLAN id|
+| spd | string      | sequence of direction of 1st eight packets |
+| vlan | long       | VLAN id|
 | sdata | long      | total src data (payload) in bytes|
 | ddata | long      | total dst data (payload) in bytes|
-| sbytes | long      | total src bytes|
-| dbytes | long      | total dst bytes|
-| sentropy | long      | entropy of src data |
-| dentropy | long      | entropy of dst data |
-| siat | long      | src average interarrivate time |
-| diat | long      | dst average interarrivate time |
-| reason | string    | flow termination reason |
-| applabel | string    | application label |
+| sbytes | long     | total src bytes|
+| dbytes | long     | total dst bytes|
+| sentropy | long   | entropy of src data |
+| dentropy | long   | entropy of dst data |
+| siat | long       | src average interarrivate time |
+| diat | long       | dst average interarrivate time |
+| reason | string   | flow termination reason |
+| applabel | string | application label |
 | timestamp | timestamp | record insertion time      |
+
+## GeoLite2 ASN tagging
+To enable ASN lookup and tagging, download **GeoLite2-ASN.mmdb** from [MaxMind](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data). Then, map the file in the volume section of docker-compose.yml to: /var/shadowmeter/GeoLite2-ASN.mmdb.  For example, see the [docke-compose file](./docker-compose.yml) in this repository.
 
 ## ShadowMeter Application
 ![ShadowMeter App](shadowmeter-app.png)

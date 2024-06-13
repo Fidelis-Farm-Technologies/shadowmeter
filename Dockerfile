@@ -29,6 +29,7 @@ COPY ./etc/logrotate/shadowmeter.logrotate /etc/logrotate.d/shadowmeter
 
 
 COPY --from=builder \
+    /lib/libndpi.so.4 \
     /usr/lib/x86_64-linux-gnu/libpcap.so.1.10.3 \
     /usr/lib/x86_64-linux-gnu/libglib-2.0.so.0 \
     /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0.11.2 \

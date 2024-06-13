@@ -19,4 +19,4 @@ serde_derive = "1.0.197"
 lazy_static = "1.4.0"
 anyhow = "1.0.82"
 tch = "0.15.0"
-
+geoip2 = "0.1.7"
