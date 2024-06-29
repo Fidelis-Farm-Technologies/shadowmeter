@@ -17,11 +17,16 @@ fi
 
 if [ ! -d /var/shadowmeter/spool/yaf ]; then
     mkdir /var/shadowmeter/spool/yaf
+else
+    rm /var/shadowmeter/spool/yaf/yaf-*.lock
 fi
 
 if [ ! -d /var/shadowmeter/spool/flow ]; then
     mkdir /var/shadowmeter/spool/flow
+else
+    rm /var/shadowmeter/spool/flow/.flow.*
 fi
+
 if [ ! -d /var/shadowmeter/spool/processed ]; then
     mkdir /var/shadowmeter/spool/processed
 fi

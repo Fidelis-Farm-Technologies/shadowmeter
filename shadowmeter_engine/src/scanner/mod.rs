@@ -7,9 +7,7 @@ use std::io::Error;
 use std::io::{BufRead, BufReader};
 use std::sync::mpsc::SyncSender;
 
-use lazy_static::lazy_static;
 use serde_json::Value;
-use std::collections::HashMap;
 use std::{fs, thread, time};
 
 pub struct YafFiles {
@@ -63,7 +61,7 @@ impl YafFiles {
                             fs::rename(src, dst).unwrap();
                         }
                         count = count + 1;
-                    }
+                    }                    
                 }
             }
             if count == 0 {
@@ -101,6 +99,19 @@ impl YafFiles {
             .timestamp_millis()
                 * 1000;
 
+            // source addresss
+            let mut saddr = flow["sourceIPv4Address"].as_str().unwrap();
+            if saddr.is_empty() {
+                saddr = flow["sourceIPv6Address"].as_str().unwrap();
+            }
+
+            // destination addresss
+            let mut daddr = flow["destinationIPv4Address"].as_str().unwrap();
+            if daddr.is_empty() {
+                daddr = flow["destinationIPv6Address"].as_str().unwrap();
+            }
+
+            // application label
             let l7_protocol = flow["ndpiL7Protocol"]
                 .as_str()
                 .unwrap_or("")
@@ -112,7 +123,7 @@ impl YafFiles {
 
             let mut applabel = "".to_string();
 
-            if l7_protocol.len() == 0 {
+            if l7_protocol.is_empty() {
                 if l7_sub_protocol != "Unknown" {
                     applabel = l7_sub_protocol.to_lowercase();
                 }
@@ -129,14 +140,16 @@ impl YafFiles {
                 stime: start_time_ms,
                 ltime: last_time_ms,
                 proto: flow["protocolIdentifier"].as_i64().unwrap(),
-                saddr: flow["sourceIPv4Address"].as_str().unwrap().to_string(),
+                saddr: saddr.to_string(),
                 sport: flow["sourceTransportPort"].as_i64().unwrap(),
-                daddr: flow["destinationIPv4Address"].as_str().unwrap().to_string(),
+                daddr: daddr.to_string(),
                 dport: flow["destinationTransportPort"].as_i64().unwrap(),
                 sasn: 0,
                 sasnorg: "".to_string(),
+                scountry: "".to_string(),
                 dasn: 0,
                 dasnorg: "".to_string(),
+                dcountry: "".to_string(),
                 sutcp: flow["unionTCPFlags"].as_str().unwrap_or("").to_string(),
                 dutcp: flow["reverseUnionTCPFlags"]
                     .as_str()

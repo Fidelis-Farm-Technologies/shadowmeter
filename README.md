@@ -75,6 +75,13 @@ See the [QuestDb documentation](https://questdb.io/docs/reference/sql/overview/)
 | field | type      | description    |
 | ----- | -------   | -------------- |
 | sid   | symbol    | sensor id      |
+| sasnorg | symbol  | src ASN organization|
+| scountry | symbol  | src country |
+| dasnorg | symbol  | dst ASN organization |
+| dcountry | symbol  | dst country |
+| reason | symbol   | flow termination reason |
+| applabel | symbol | application label |
+| spd | symbol      | sequence of direction of 1st eight packets |
 | stime | timestamp | start time     |
 | ltime | timestamp | last time      |
 | proto | long      | protocol       |
@@ -83,14 +90,11 @@ See the [QuestDb documentation](https://questdb.io/docs/reference/sql/overview/)
 | daddr | string    | dst IP address |
 | dport | long      | dst port number|
 | sasn | long       | src ASN |
-| sasnorg | string  | src ASN organization|
 | dasn | long       | dst ASN |
-| dasnorg | string  | dst ASN organization |
 | sutcp | string    | union of src TCP flags |
 | dutcp | string    | union of dst TCP flags |
 | sitcp | string    | initial src TCP flags |
 | ditcp | string    | initial dst TCP flags |
-| spd | string      | sequence of direction of 1st eight packets |
 | vlan | long       | VLAN id|
 | sdata | long      | total src data (payload) in bytes|
 | ddata | long      | total dst data (payload) in bytes|
@@ -100,12 +104,15 @@ See the [QuestDb documentation](https://questdb.io/docs/reference/sql/overview/)
 | dentropy | long   | entropy of dst data |
 | siat | long       | src average interarrivate time |
 | diat | long       | dst average interarrivate time |
-| reason | string   | flow termination reason |
-| applabel | string | application label |
+
+
 | timestamp | timestamp | record insertion time      |
 
 ## GeoLite2 ASN tagging
-To enable ASN lookup and tagging, download **GeoLite2-ASN.mmdb** from [MaxMind](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data). Then, map the file in the volume section of docker-compose.yml to: /var/shadowmeter/GeoLite2-ASN.mmdb.  For example, see the [docke-compose file](./docker-compose.yml) in this repository.
+To enable ASN tagging, download **GeoLite2-ASN.mmdb** from [MaxMind](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data). Then, map the file in the volume section of docker-compose.yml to: /var/shadowmeter/maxmind/GeoLite2-ASN.mmdb.  For example, see the [docke-compose file](./docker-compose.yml) in this repository.
+
+## GeoLite2 Countring tagging
+To enable Country tagging, download **GeoLite2-Country.mmdb** from [MaxMind](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data). Then, map the file in the volume section of docker-compose.yml to: /var/shadowmeter/maxmind/GeoLite2-Country.mmdb.  For example, see the [docke-compose file](./docker-compose.yml) in this repository.
 
 ## ShadowMeter Application
 ![ShadowMeter App](shadowmeter-app.png)
@@ -136,7 +143,5 @@ ShadowMeter App includes an automatically generated self-signed certificate for 
 ## Community
 
 For more information join the community at our [blog](https://www.shadowmeter.io).
-
-
 
 &copy;2024 Fidelis Farm & Technologies, LLC.
