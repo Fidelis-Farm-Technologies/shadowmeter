@@ -82,7 +82,9 @@ impl Database {
                     // lookup saddr country code
                     if country_db.is_ok() {
                         if let Ok(result) = country_db.as_ref().unwrap().lookup(ip) {
-                            record.scountry = result.country.unwrap().iso_code.unwrap_or("").to_string();                                  
+                            if let Some(country) = result.country {
+                                record.scountry = country.iso_code.unwrap_or("").to_lowercase().to_string();
+                            }
                         }  
                     }                      
                 }                
@@ -101,7 +103,9 @@ impl Database {
                     // lookup daddr country code               
                     if country_db.is_ok() {
                         if let Ok(result) = country_db.as_ref().unwrap().lookup(ip) {
-                            record.dcountry = result.country.unwrap().iso_code.unwrap_or("").to_string();                                  
+                            if let Some(country) = result.country {
+                                record.dcountry = country.iso_code.unwrap_or("").to_lowercase().to_string();
+                            }
                         }  
                     }                                           
                 }
@@ -115,15 +119,15 @@ impl Database {
     pub fn insert_record(&mut self, record: Record) -> Result<()> {
         let mut buffer = Buffer::new();
         let _ = buffer
-            .table("flow")?
-            .symbol("sid", record.sid)?
+            .table("flow")?  
+            .symbol("sid", record.sid)?  
+            .symbol("applabel", record.applabel)?   
+            .symbol("spd", record.spd)?        
+            .symbol("reason", record.reason)?                     
             .symbol("sasnorg", record.sasnorg)?
             .symbol("scountry", record.scountry)?  
             .symbol("dasnorg", record.dasnorg)?
-            .symbol("dcountry", record.dcountry)? 
-            .symbol("reason", record.reason)?    
-            .symbol("applabel", record.applabel)?   
-            .symbol("spd", record.spd)?                  
+            .symbol("dcountry", record.dcountry)?                      
             .column_ts("stime", TimestampMicros::new(record.stime))?
             .column_ts("ltime", TimestampMicros::new(record.ltime))?
             .column_i64("vlan", record.vlan)?             
@@ -147,7 +151,7 @@ impl Database {
             .column_i64("siat", record.siat)?
             .column_i64("diat", record.diat)?
             .column_i64("sasn", record.sasn)?
-            .column_i64("dasn", record.dasn)?          
+            .column_i64("dasn", record.dasn)?              
             .at(TimestampNanos::now())
             .unwrap();
 

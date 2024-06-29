@@ -70,7 +70,7 @@ services:
     restart: unless-stopped
     user: "0:0"
     volumes:
-      - ./var/grafana:/var/lib/grafana
+    - ./var/grafana:/var/lib/grafana
     # uncomment below to enable custom provisioning
     #- ./grafana/provisioning:/etc/grafana/provisioning
 
