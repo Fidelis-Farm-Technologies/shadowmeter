@@ -2,16 +2,18 @@ extern crate serde_derive;
 
 use chrono::NaiveDateTime;
 use glob::glob;
-use std::fs::File;
 use std::io::Error;
 use std::io::{BufRead, BufReader};
 use std::sync::mpsc::SyncSender;
+
+use std::{error::Error, io, process};
+use serde::Deserialize;
+use csv;
 
 use serde_json::Value;
 use std::{fs, thread, time};
 
 pub struct YafFiles {
-    sensor_id: String,
     directory_glob: String,
     processed_dir: String,
     output: SyncSender<Record>,
@@ -21,13 +23,11 @@ use crate::flow::Record;
 
 impl YafFiles {
     pub fn new(
-        sensor_id: &String,
         directory_glob: &String,
         processed_dir: &String,
         output: SyncSender<Record>,
     ) -> Self {
         Self {
-            sensor_id: sensor_id.clone(),
             directory_glob: directory_glob.clone(),
             processed_dir: processed_dir.clone(),
             output: output,
@@ -70,9 +70,19 @@ impl YafFiles {
         }
     }
 
-    fn process_file(&mut self, file_name: &String) -> Result<(), Error> {
+
+    fn process_file(&mut self, file_name: &String) -> Result<(), PolarsError> {
         println!("process_file: {}", file_name);
 
+
+        let file = File::open(file_name).expect("Couldn't open input");
+        let mut reader = csv::ReaderBuilder::new().delimiter(b'|').has_headers(true).from_reader(file);
+        
+        for result in reader.deserialize::<Record>() {
+            println!("{:?}", result?);
+        }
+        
+/* 
         let file = File::open(file_name)?;
         for line in BufReader::new(file).lines() {
             let line = line.expect("Error: reading json record");
@@ -182,7 +192,7 @@ impl YafFiles {
             };
             self.output.send(record).expect("error sending record");
         }
-
+*/
         Ok(())
     }
 }

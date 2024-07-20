@@ -31,9 +31,6 @@ struct Args {
     database: String,
 
     #[arg(short, long)]
-    sensor_id: String,
-
-    #[arg(short, long)]
     geolite_asn: Option<String>,
 
     #[arg(short, long)]
@@ -42,7 +39,6 @@ struct Args {
 }
 
 fn run_with_analyzer(
-    sensor_id: &String,
     input: &String,
     database: &String,
     geolite_asn_file: &String,
@@ -53,7 +49,7 @@ fn run_with_analyzer(
     let (scanner_send, analyzer_recv) = mpsc::sync_channel::<Record>(8);
     let (analyzer_send, logger_recv) = mpsc::sync_channel::<Record>(8);
 
-    let mut scanner = scanner::YafFiles::new(&sensor_id, &input, &dest_dir, scanner_send);
+    let mut scanner = scanner::YafFiles::new(&input, &dest_dir, scanner_send);
     let mut analyzer = analyzer::Analyzer::new(analyzer_recv, analyzer_send, &model_file);
     let mut logger = logger::Database::new(&database, &geolite_asn_file, &geolite_country_file, logger_recv);
 
@@ -69,7 +65,6 @@ fn run_with_analyzer(
 }
 
 fn run_without_analyzer(
-    sensor_id: &String, 
     input: &String, 
     database: &String, 
     geolite_asn_file: &String, 
@@ -79,7 +74,7 @@ fn run_without_analyzer(
 
     let (scanner_send, logger_recv) = mpsc::sync_channel::<Record>(8);
 
-    let mut scanner = scanner::YafFiles::new(&sensor_id, &input, &dest_dir, scanner_send);
+    let mut scanner = scanner::YafFiles::new(&input, &dest_dir, scanner_send);
     let mut logger = logger::Database::new(&database, &geolite_asn_file, &geolite_country_file, logger_recv);
 
     thread::spawn(move || {
@@ -99,7 +94,7 @@ fn main() {
 
     if model_file.is_empty() {
         run_without_analyzer(
-            &args.sensor_id, 
+
             &args.input, 
             &args.database,  
             &geolite_asn_file,  
@@ -108,7 +103,6 @@ fn main() {
         );
     } else {
         run_with_analyzer(
-            &args.sensor_id,
             &args.input,
             &args.database,
             &geolite_asn_file,

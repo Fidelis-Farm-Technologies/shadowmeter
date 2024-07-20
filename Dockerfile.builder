@@ -30,7 +30,6 @@ RUN ldconfig
 #
 WORKDIR /builder/cert-nsa-yaf
 RUN git checkout ndpi-4.8
-# RUN ./configure --prefix=/opt/shadowmeter --enable-entropy --enable-applabel --enable-dpi --with-ndpi 
 RUN ./configure --prefix=/opt/shadowmeter --enable-entropy --with-ndpi 
 RUN make && make install
 #
