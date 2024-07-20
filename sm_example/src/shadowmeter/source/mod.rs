@@ -1,5 +1,7 @@
 extern crate glob;
 
+
+use glob::glob;
 use std::io;
 use std::io::BufRead;
 use std::io::BufReader;
@@ -7,6 +9,11 @@ use std::net::{TcpListener, TcpStream};
 use std::sync::mpsc;
 use std::sync::mpsc::SyncSender;
 use std::thread;
+
+use std::time::Duration;
+//use chrono::NaiveDateTime;
+use std::fs;
+use crate::shadowmeter::source;
 
 mod file_reader {
     use std::{
@@ -98,10 +105,42 @@ pub fn file(input_spec: String, send_channel: SyncSender<String>) {
 pub fn directory(
     input_spec: String,
     archive_spec: String,
-    interval: u32,
     send_channel: SyncSender<String>,
 ) {
-    println!("input irectory: {}", input_spec);
+    println!("input directory: {}", input_spec);
+    println!("archive directory: {}", archive_spec);
+
+    let sleep_interval = Duration::from_millis(1000);
+    println!("directory scanner: running");
+    loop {
+        let mut count = 0;
+        for entry in glob(&input_spec).expect("Failed to read glob pattern") {
+            if let Ok(path) = entry {
+                if path.is_file() {
+                    let src_dir = path.parent().unwrap();
+                    let src_file = path.file_name().unwrap();
+                    let src = format!(
+                        "{}/{}",
+                        src_dir.to_str().unwrap(),
+                        src_file.to_str().unwrap()
+                    );
+
+                    source::file(src.clone(), send_channel.clone());
+
+                    if archive_spec.is_empty() {
+                        fs::remove_file(src).unwrap();
+                    } else {
+                        let dst = format!("{}/{}", &archive_spec, src_file.to_str().unwrap());
+                        fs::rename(src, dst).unwrap();
+                    }
+                    count = count + 1;
+                }
+            }
+        }
+        if count == 0 {
+            thread::sleep(sleep_interval);
+        }
+    }
 }
 
 pub fn stdin(send_channel: SyncSender<String>) {

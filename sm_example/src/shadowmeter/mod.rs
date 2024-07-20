@@ -4,12 +4,13 @@ use std::io;
 use std::io::BufRead;
 use std::sync::mpsc;
 use std::sync::mpsc::{Receiver, SyncSender};
-use std::thread;
+use std::thread::{self, JoinHandle};
 
 mod sink;
 mod source;
 
 pub static FORMAT_VERSION: &'static str = "100";
+pub const CHANNEL_LENGTH: usize = 64;
 
 pub const VERSION: usize = 0;
 pub const OBSERVATION: usize = 1;
@@ -68,22 +69,22 @@ pub trait Processor {
 
     fn process_stream(&self, input_channel: Receiver<String>, output_channel: SyncSender<String>);
 
-    fn process_loop(
+    fn process_pipeline3(
         &self,
         input_spec: String,
         output_spec: String,
         archive_spec: String,
-        interval: u32
+        interval: u64,
     ) {
-        let (source_channel, input_channel) = mpsc::sync_channel::<String>(8);
-        let (output_channel, sink_channel) = mpsc::sync_channel::<String>(8);
+        let (source_channel, input_channel) = mpsc::sync_channel::<String>(CHANNEL_LENGTH);
+        let (output_channel, sink_channel) = mpsc::sync_channel::<String>(CHANNEL_LENGTH);
 
-        let output_thread = thread::spawn(|| {
+        thread::spawn(move || {
             if !output_spec.is_empty() {
                 if output_spec.starts_with("tcp://") {
                     sink::socket(output_spec[6..].to_string(), sink_channel);
                 } else if output_spec.ends_with("/") {
-                    sink::directory(output_spec, archive_spec, interval, sink_channel);
+                    sink::directory(output_spec, interval, sink_channel);
                 } else {
                     sink::file(output_spec, sink_channel);
                 }
@@ -92,12 +93,12 @@ pub trait Processor {
             }
         });
 
-        let input_thread = thread::spawn(|| {
+        thread::spawn(move || {
             if !input_spec.is_empty() {
                 if input_spec.starts_with("tcp://") {
                     source::socket(input_spec[6..].to_string(), source_channel);
                 } else if input_spec.ends_with("/") {
-                    source::directory(input_spec, archive_spec, interval, source_channel);
+                    source::directory(input_spec, archive_spec, source_channel);
                 } else {
                     source::file(input_spec, source_channel);
                 }
@@ -105,9 +106,49 @@ pub trait Processor {
                 source::stdin(source_channel);
             }
         });
-        self.process_stream(input_channel, output_channel);
 
-        input_thread.join().unwrap();
-        output_thread.join().unwrap();
+        self.process_stream(input_channel, output_channel);
+    }
+
+    fn process_pipeline2(
+        &self,
+        input_spec: String,
+        output_spec: String,
+        archive_spec: String,
+        interval: u64,
+    ) {
+        let (source_channel, input_channel) = mpsc::sync_channel::<String>(CHANNEL_LENGTH);
+        let (output_channel, sink_channel) = mpsc::sync_channel::<String>(CHANNEL_LENGTH);
+
+        thread::spawn(move || {
+            if !output_spec.is_empty() {
+                if output_spec.starts_with("tcp://") {
+                    sink::socket(output_spec[6..].to_string(), sink_channel);
+                } else if output_spec.ends_with("/") {
+                    sink::directory(output_spec, interval, sink_channel);
+                } else {
+                    sink::file(output_spec, sink_channel);
+                }
+            } else {
+                sink::stdout(sink_channel);
+            }
+        });
+
+
+        thread::spawn(move || {
+            if !input_spec.is_empty() {
+                if input_spec.starts_with("tcp://") {
+                    source::socket(input_spec[6..].to_string(), source_channel);
+                } else if input_spec.ends_with("/") {
+                    source::directory(input_spec, archive_spec, source_channel);
+                } else {
+                    source::file(input_spec, source_channel);
+                }
+            } else {
+                source::stdin(source_channel);
+            }
+        });
+
+        self.process_stream(input_channel, output_channel);
     }
 }

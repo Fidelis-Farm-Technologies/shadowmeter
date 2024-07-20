@@ -19,7 +19,7 @@ struct Args {
     archive: Option<String>,
 
     #[arg(long)]
-    interval: Option<u32>,
+    interval: Option<u64>,
 
     #[arg(long)]
     ou: Option<String>,
@@ -35,7 +35,7 @@ struct SmExample {
     input: String,
     output: String,
     archive: String,
-    interval: u32,
+    interval: u64,
     ou: String,
     asn: String,
     country: String,
@@ -51,7 +51,7 @@ impl shadowmeter::Processor for SmExample {
             input: args.input.clone().unwrap_or("".to_string()),
             output: args.output.clone().unwrap_or("".to_string()),
             archive: args.archive.clone().unwrap_or("".to_string()),
-            interval: args.interval.clone().unwrap_or(0),
+            interval: args.interval.clone().unwrap_or(10),
             ou: args.ou.clone().unwrap_or("".to_string()),
             asn: args.geolite_asn.clone().unwrap_or("".to_string()),
             country: args.geolite_country.clone().unwrap_or("".to_string()),
@@ -64,7 +64,7 @@ impl shadowmeter::Processor for SmExample {
     }
 
     fn run(&self) {
-        self.process_loop(
+        self.process_pipeline3(
             self.input.clone(),
             self.output.clone(),
             self.archive.clone(),
@@ -79,11 +79,9 @@ impl shadowmeter::Processor for SmExample {
             //let mut line = input_channel.recv().unwrap();
             let mut line = match input_channel.recv() {
                 Ok(line) => {
-                    /*
-                    let mut field: Vec<String> =
-                        line.trim().split(',').map(str::to_string).collect();
-
-                    if !field.is_empty() {
+                    let mut field = line.trim().split(',').collect::<Vec<&str>>();
+                                        
+                    if field.is_empty() {
                         continue;
                     }
                     if field[shadowmeter::VERSION].starts_with("ver") {
@@ -91,11 +89,12 @@ impl shadowmeter::Processor for SmExample {
                     }
                     if field[shadowmeter::VERSION].starts_with(shadowmeter::FORMAT_VERSION) {
                         //
+                        //println!("record: {:?}", field);  
                         counter += 1;
                     } else {
                         panic!("invalid data");
                     }
-                    */
+                    
                     output_channel.send(line).expect("error sending record");
                 }
                 Err(_eof) => {
@@ -103,12 +102,17 @@ impl shadowmeter::Processor for SmExample {
                 }
             };
         }
+        println!("processed {} records", counter);  
     }
 }
 
 fn main() {
+    use std::time::Instant;
+
     let mut sm_example: SmExample = shadowmeter::Processor::new("sm_example");
     println!("{} running", sm_example.name());
 
+    let mark = Instant::now();
     sm_example.run();
+    println!("elapse time: {:.2?}", mark.elapsed());  
 }
