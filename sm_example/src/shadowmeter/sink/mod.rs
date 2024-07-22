@@ -1,6 +1,5 @@
 extern crate glob;
 
-use chrono;
 use std::fs::File;
 use std::io::BufRead;
 use std::net::TcpStream;
@@ -42,16 +41,16 @@ pub fn file(output_spec: String, recv_channel: Receiver<String>) {
     }
 }
 
-pub fn directory(output_spec: String, interval: u64, recv_channel: Receiver<String>) {
+pub fn directory(output_spec: String, fileprefix_spec: String, interval: u64, recv_channel: Receiver<String>) {
     println!("sink directory: {}", output_spec);
     println!("sink interval: {} sec", interval);
 
     loop {
         let now = chrono::offset::Local::now();
-        let file_name = now.format("sm%Y%m%y.%H%M%S.csv");
+        let file_name = format!("{}{}", fileprefix_spec, now.format("%Y%m%y.%H%M%S.csv"));
         let file_path = format!("{}{}", output_spec, file_name);
 
-        let output = File::create(file_path).expect("creating output fil failed");
+        let output = File::create(file_path).expect("failed to creat output file`");
         let mut output = BufWriter::new(output);
 
         let epoch: Instant = Instant::now();

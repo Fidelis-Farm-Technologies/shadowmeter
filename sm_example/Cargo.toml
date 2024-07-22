@@ -8,6 +8,8 @@ edition = "2021"
 [dependencies]
 chrono = "0.4.38"
 clap = { version = "4.5.9", features = ["derive"] }
+geoip2 = "0.1.7"
 glob = "0.3.1"
+mac_oui = { version = "0.4.10", features = ["with-db"] }
 quick-csv = "0.1.6"
 rustc-serialize = "0.3.25"
