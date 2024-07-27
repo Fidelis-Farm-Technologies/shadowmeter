@@ -8,11 +8,8 @@ extern crate c_string;
 extern crate exitcode;
 extern crate libc;
 
-use crate::shadowmeter::export::export;
 use crate::shadowmeter::feature::feature;
-use crate::shadowmeter::import::import;
 use crate::shadowmeter::inference::inference;
-use crate::shadowmeter::post::post;
 use clap::Parser;
 use std::path::Path;
 
@@ -31,25 +28,10 @@ struct Args {
     output: Option<String>,
 
     #[arg(long)]
-    uri: Option<String>,
-
-    #[arg(long)]
-    observation: Option<String>,
-
-    #[arg(long)]
     processed_dir: Option<String>,
 
     #[arg(long)]
     polling: Option<bool>,
-
-    #[arg(long)]
-    asn: Option<String>,
-
-    #[arg(long)]
-    country: Option<String>,
-
-    #[arg(long)]
-    format: Option<String>,
 }
 
 fn parse_command() {
@@ -58,7 +40,6 @@ fn parse_command() {
     let command_spec = args.command.clone();
     let input_spec = args.input.clone();
     let output_spec = args.output.clone().unwrap_or("".to_string());
-    let uri_spec = args.uri.clone().unwrap_or("".to_string());
     let processed_spec = args.processed_dir.clone().unwrap_or("".to_string());
     let polling = args.polling.clone().unwrap_or(false);
 
@@ -113,28 +94,6 @@ fn parse_command() {
     }
 
     match command_spec.as_str() {
-        "import" => {
-            let observation = args.observation.clone().unwrap_or("yaf".to_string());
-            let asn = args.asn.clone().unwrap_or("".to_string());
-            let country = args.country.clone().unwrap_or("".to_string());
-            let _ = import(
-                &observation,
-                &input_spec,
-                &output_spec,
-                &processed_spec,
-                polling,
-                &asn,
-                &country,
-            );
-        }
-        "export" => {
-            let format = args.format.clone().unwrap_or("json".to_string());
-            if format == "questdb" {
-                let _ = export(&input_spec, &uri_spec, &processed_spec, polling, &format);
-            } else {
-                let _ = export(&input_spec, &output_spec, &processed_spec, polling, &format);
-            }
-        }
         "feature" => {
             let format = args.format.clone().unwrap_or("json".to_string());
             let _ = feature(&input_spec, &output_spec, &processed_spec, polling, &format);
@@ -142,9 +101,6 @@ fn parse_command() {
         "inference" => {
             let format = args.format.clone().unwrap_or("json".to_string());
             let _ = inference(&input_spec, &output_spec, &processed_spec, polling, &format);
-        }
-        "post" => {
-            let _ = post(&input_spec, &uri_spec, &processed_spec, polling);
         }
         _ => {
             eprintln!("error: invalid --command <option>");

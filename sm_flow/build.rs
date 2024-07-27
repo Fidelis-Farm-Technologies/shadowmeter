@@ -8,9 +8,10 @@ fn main() {
     let build = builder
         .files(src.iter())      
         .include("/usr/include/glib-2.0")
-        .include("/usr/lib/x86_64-linux-gnu/glib-2.0/include")        
-        .include("../../cert-nsa-yaf/include/yaf") 
-        .include("../../cert-nsa-yaf/airframe/include/airframe")
+        .include("/usr/lib/x86_64-linux-gnu/glib-2.0/include")    
+        .include("/usr/local/include")     
+        .include("/usr/local/include/yaf") 
+        .include("/usr/local/include/airframe") 
         .flag("-Wno-unused-parameter")
         .opt_level(2);
     build.compile("yaf_processor");

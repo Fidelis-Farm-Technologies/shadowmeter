@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------
 #
 # ---------------------------------------------------------------
-FROM shadowmeter_builder AS builder
+FROM shadowmeter_apps AS builder
 FROM bitnami/minideb:bookworm AS runner
 
 
