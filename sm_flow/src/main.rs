@@ -34,7 +34,7 @@ struct Args {
     observation: Option<String>,
 
     #[arg(long)]
-    processed_dir: Option<String>,
+    processed: Option<String>,
 
     #[arg(long)]
     polling: Option<bool>,
@@ -56,7 +56,7 @@ fn parse_command() {
     let input_spec = args.input.clone();
     let output_spec = args.output.clone().unwrap_or("".to_string());
     let uri_spec = args.uri.clone().unwrap_or("".to_string());
-    let processed_spec = args.processed_dir.clone().unwrap_or("".to_string());
+    let processed_spec = args.processed.clone().unwrap_or("".to_string());
     let polling = args.polling.clone().unwrap_or(false);
 
     //

@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <ctype.h>
 #include <ndpi/ndpi_api.h>
 #include <duckdb.h>
 #include <maxminddb.h>
@@ -112,6 +113,7 @@ static void print_ndpi(GString *rstr,
                        uint16_t ndpi_sub)
 {
     char protocol_buf[128];
+    char lowercase_label[256];
     ndpi_protocol protocol;
     protocol.master_protocol = ndpi_master;
     protocol.app_protocol = ndpi_sub;
@@ -119,7 +121,12 @@ static void print_ndpi(GString *rstr,
     protocol.custom_category_userdata = NULL;
     char *appid = ndpi_protocol2name(ndpi_ctx, protocol, protocol_buf, sizeof(protocol_buf) - 1);
 
-    g_string_append_printf(rstr, "%s", appid);
+    strncpy(lowercase_label, appid, sizeof(lowercase_label));
+    for (int i = 0; lowercase_label[i]; i++)
+    {
+        lowercase_label[i] = tolower(lowercase_label[i]);
+    }
+    g_string_append_printf(rstr, "%s", lowercase_label);
 }
 
 static int append_yaf_record(duckdb_appender appender,
@@ -498,6 +505,7 @@ int yaf_import(const char *observation,
     duckdb_appender appender;
     char *yaf_file_basename = NULL;
     char output_file[PATH_MAX];
+    char tmp_file[PATH_MAX];
     fbCollector_t *collector;
     struct ndpi_detection_module_struct *ndpi_ctx = ndpi_init_detection_module(0);
 
@@ -578,6 +586,7 @@ int yaf_import(const char *observation,
             fprintf(stderr, "%s: error opening %s\n", __FUNCTION__, input_file);
             return -1;
         }
+
         collector = fbCollectorAllocFP(NULL, input_fp);
     }
     else
@@ -590,7 +599,8 @@ int yaf_import(const char *observation,
 
     if (output_dir && strlen(output_dir))
     {
-        snprintf(output_file, sizeof(output_file) - 1, "%s/sm%lu-%s.flow", output_dir, yaf_epoch_micro(), yaf_file_basename);
+        snprintf(tmp_file, sizeof(tmp_file) - 1, "%s/.%s", output_dir, yaf_file_basename);
+        snprintf(output_file, sizeof(output_file) - 1, "%s/%s.flow", output_dir, yaf_file_basename);
         //
         // initialize duckdb
         //
@@ -608,9 +618,9 @@ int yaf_import(const char *observation,
         duckdb_set_config(config, "default_order", "DESC");
 
         // open the database using the configuration
-        if (duckdb_open_ext(output_file, &db, config, NULL) == DuckDBError)
+        if (duckdb_open_ext(tmp_file, &db, config, NULL) == DuckDBError)
         {
-            fprintf(stderr, "%s: error opening %s\n", __FUNCTION__, output_file);
+            fprintf(stderr, "%s: error opening %s\n", __FUNCTION__, tmp_file);
             return -1;
         }
         // cleanup the configuration object
@@ -618,7 +628,7 @@ int yaf_import(const char *observation,
 
         if (duckdb_connect(db, &con) == DuckDBError)
         {
-            fprintf(stderr, "%s: error connecting %s\n", __FUNCTION__, output_file);
+            fprintf(stderr, "%s: error connecting %s\n", __FUNCTION__, tmp_file);
             return -1;
         }
 
@@ -686,5 +696,8 @@ int yaf_import(const char *observation,
     if (input_fp)
         fclose(input_fp);
 
-    return flow_id; // count
+    if (rename(tmp_file, output_file) == 0)
+        return flow_id; // count
+
+    return -1;
 }

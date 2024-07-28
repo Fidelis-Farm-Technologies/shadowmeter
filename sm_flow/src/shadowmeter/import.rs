@@ -11,8 +11,8 @@ use c_string::CStrBuf;
 use std::ffi::CStr;
 use std::fs;
 use std::path::Path;
-use std::{thread, time};
 use std::time::Duration;
+use std::{thread, time};
 
 // C functions wrappering libfixbuf operations
 extern "C" {
@@ -53,13 +53,6 @@ pub fn import(
     country_spec: &String,
 ) -> Result<(), std::io::Error> {
 
-    println!("\tinput spec: {}", input_spec);
-    println!("\toutput spec: {}", output_spec);
-    println!("\tprocessed spec: {}", processed_spec);
-    println!("\tasn file: {}", asn_spec);
-    println!("\tcountry file: {}", country_spec);
-    println!("\tpolling: {}", polling);
-
     let input = match CStrBuf::from_str(input_spec) {
         Ok(s) => s,
         Err(e) => panic!("{}", e),
@@ -90,6 +83,13 @@ pub fn import(
         Err(e) => panic!("{}", e),
     };
 
+    println!("\tinput spec: {}", input_spec);
+    println!("\toutput spec: {}", output_spec);
+    println!("\tprocessed spec: {}", processed_spec);
+    println!("\tasn file: {}", asn_spec);
+    println!("\tcountry file: {}", country_spec);
+    println!("\tpolling: {}", polling);
+    
     if Path::new(input_spec).is_file() {
         let status = safe_yaf_import(&observation, &input, &output, &asn, &country);
         if status < 0 {
@@ -98,14 +98,22 @@ pub fn import(
         }
     } else {
         let poll_interval = Duration::from_millis(1000);
+        println!("import scanner: running [{}]", input_spec);
         loop {
             let mut counter = 0;
             let mut processed_path;
+           
             for entry in fs::read_dir(input_spec)? {
-                let file = entry.unwrap();
+                let file: fs::DirEntry = entry.unwrap();
                 let file_name = String::from(file.file_name().to_string_lossy());
                 let src_path = String::from(file.path().to_string_lossy());
+
                 if src_path.ends_with(".yaf") {
+                    let lock_path = format!("{}.lock", src_path);
+                    if Path::new(lock_path.as_str()).exists() {
+                        continue;
+                    }
+
                     let yaf_file = match CStrBuf::from_str(&src_path) {
                         Ok(s) => s,
                         Err(e) => panic!("{}", e),

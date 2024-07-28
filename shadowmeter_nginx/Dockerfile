@@ -6,9 +6,9 @@
 FROM nginx:stable-alpine
 
 ## Environment
-ENV API_HOST=shadowmeter_app
+ENV API_HOST=shadowmeter_web
 ENV API_PORT=3001
-ENV SHADOWMETER_HOST=shadowmeter_app
+ENV SHADOWMETER_HOST=shadowmeter_web
 ENV SHADOWMETER_PORT=3000
 ENV SHADOWMETER_SSL=/C=US/ST=Virginia/L=Crozet/O=Fidelis Farm/OU=ShadowMeter/CN=localhost/
 

@@ -16,8 +16,7 @@ else
 fi
 
 if [ -z "${SHADOWMETER_OPTIONS}" ]; then
-    # SHADOWMETER_OPTIONS="--entropy --applabel --dpi --silk --verbose --max-payload=2048 --flow-stats --out /var/shadowmeter/spool/yaf/yaf --lock"
-    SHADOWMETER_OPTIONS="--entropy --ndpi --verbose --max-payload=2048 --flow-stats --out /var/shadowmeter/spool/yaf/yaf --lock"
+    SHADOWMETER_OPTIONS="--entropy --ndpi --verbose --max-payload=2048 --flow-stats --mac --out /var/shadowmeter/spool/yaf/yaf --lock"
 fi
 
 export LTDL_LIBRARY_PATH=/opt/shadowmeter/lib/yaf

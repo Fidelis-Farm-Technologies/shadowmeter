@@ -143,65 +143,119 @@ fn insert_questdb_records(db_in: &Connection, db_out: &mut questdb::ingress::Sen
 
     for r in record_iter {
         let record = r.unwrap();
-        //println!("flow record: {:?}", record);
-
         let _ = buffer
-            .table("flow").unwrap()
-            .symbol("observ", record.observ).unwrap()
-            .symbol("applabel", record.appid).unwrap()
-            .symbol("spd", record.spd).unwrap()
-            .symbol("reason", record.reason).unwrap()
-            .symbol("asnorg", record.asnorg).unwrap()
-            .symbol("rasnorg", record.rasnorg).unwrap()
-            .symbol("country", record.country).unwrap()
-            .symbol("rcountry", record.rcountry).unwrap()
-            .column_ts("stime", TimestampMicros::new(record.stime)).unwrap()
-            .column_ts("etime", TimestampMicros::new(record.etime)).unwrap()
-            .column_i64("vlan", record.vlan).unwrap()
-            .column_i64("rvlan", record.rvlan).unwrap()            
-            .column_i64("proto", record.proto).unwrap()
-            .column_str("addr", record.addr).unwrap()
-            .column_str("raddr", record.raddr).unwrap()            
-            .column_i64("port", record.port).unwrap()
-            .column_i64("rport", record.rport).unwrap()
-            .column_i64("asn", record.asn).unwrap()
-            .column_i64("rasn", record.rasn).unwrap()            
-            .column_str("iflag", record.iflag).unwrap()
-            .column_str("riflag", record.riflag).unwrap()
-            .column_str("uflag", record.uflag).unwrap()
-            .column_str("ruflag", record.ruflag).unwrap()
-            .column_str("tcpseq", record.tcpseq).unwrap()
-            .column_str("rtcpseq", record.rtcpseq).unwrap()
-            .column_i64("vlan", record.vlan).unwrap()
-            .column_i64("rvlan", record.rvlan).unwrap()
-            .column_i64("pkts", record.pkts).unwrap()
-            .column_i64("rpkts", record.rpkts).unwrap()
-            .column_i64("bytes", record.bytes).unwrap()
-            .column_i64("rbytes", record.rbytes).unwrap()
-            .column_i64("entropy", record.entropy).unwrap()
-            .column_i64("rentropy", record.rentropy).unwrap()
-            .column_i64("data", record.data).unwrap()
-            .column_i64("rdate", record.rdata).unwrap()
-            .column_i64("iat", record.iat).unwrap()
-            .column_i64("riat", record.riat).unwrap()
-            .column_i64("stdev", record.stdev).unwrap()
-            .column_i64("rstdev", record.rstdev).unwrap()
-            .column_i64("tcpurg", record.tcpurg).unwrap()
-            .column_i64("rtcpurg", record.rtcpurg).unwrap()
-            .column_i64("smallpktcnt", record.smallpktcnt).unwrap()
-            .column_i64("rsmallpktcnt", record.rsmallpktcnt).unwrap()
-            .column_i64("nonemptypktcnt", record.nonemptypktcnt).unwrap()
-            .column_i64("rnonemptypktcnt", record.rnonemptypktcnt).unwrap()
-            .column_i64("firstnonemptysize", record.firstnonemptysize).unwrap()
-            .column_i64("rfirstnonemptysize", record.rfirstnonemptysize).unwrap()
-            .column_i64("maxpktsize", record.maxpktsize).unwrap()
-            .column_i64("rmaxpktsize", record.rmaxpktsize).unwrap()
-            .column_i64("stdevpayload", record.stdevpayload).unwrap()
-            .column_i64("rstdevpayload", record.rstdevpayload).unwrap()
-            .column_str("mac", record.mac).unwrap()
-            .column_str("rmac", record.rmac).unwrap()
-            .column_i64("stdevpayload", record.stdevpayload).unwrap()
-            .column_i64("rstdevpayload", record.rstdevpayload).unwrap()            
+            .table("flow")
+            .unwrap()
+            .symbol("observ", record.observ)
+            .unwrap()
+            .symbol("applabel", record.appid)
+            .unwrap()
+            .symbol("spd", record.spd)
+            .unwrap()
+            .symbol("reason", record.reason)
+            .unwrap()
+            .symbol("asnorg", record.asnorg)
+            .unwrap()
+            .symbol("rasnorg", record.rasnorg)
+            .unwrap()
+            .symbol("country", record.country)
+            .unwrap()
+            .symbol("rcountry", record.rcountry)
+            .unwrap()
+            .column_ts("stime", TimestampMicros::new(record.stime))
+            .unwrap()
+            .column_ts("etime", TimestampMicros::new(record.etime))
+            .unwrap()
+            .column_i64("vlan", record.vlan)
+            .unwrap()
+            .column_i64("rvlan", record.rvlan)
+            .unwrap()
+            .column_i64("proto", record.proto)
+            .unwrap()
+            .column_str("addr", record.addr)
+            .unwrap()
+            .column_str("raddr", record.raddr)
+            .unwrap()
+            .column_i64("port", record.port)
+            .unwrap()
+            .column_i64("rport", record.rport)
+            .unwrap()
+            .column_i64("asn", record.asn)
+            .unwrap()
+            .column_i64("rasn", record.rasn)
+            .unwrap()
+            .column_str("iflag", record.iflag)
+            .unwrap()
+            .column_str("riflag", record.riflag)
+            .unwrap()
+            .column_str("uflag", record.uflag)
+            .unwrap()
+            .column_str("ruflag", record.ruflag)
+            .unwrap()
+            .column_str("tcpseq", record.tcpseq)
+            .unwrap()
+            .column_str("rtcpseq", record.rtcpseq)
+            .unwrap()
+            .column_i64("vlan", record.vlan)
+            .unwrap()
+            .column_i64("rvlan", record.rvlan)
+            .unwrap()
+            .column_i64("pkts", record.pkts)
+            .unwrap()
+            .column_i64("rpkts", record.rpkts)
+            .unwrap()
+            .column_i64("bytes", record.bytes)
+            .unwrap()
+            .column_i64("rbytes", record.rbytes)
+            .unwrap()
+            .column_i64("entropy", record.entropy)
+            .unwrap()
+            .column_i64("rentropy", record.rentropy)
+            .unwrap()
+            .column_i64("data", record.data)
+            .unwrap()
+            .column_i64("rdata", record.rdata)
+            .unwrap()
+            .column_i64("iat", record.iat)
+            .unwrap()
+            .column_i64("riat", record.riat)
+            .unwrap()
+            .column_i64("stdev", record.stdev)
+            .unwrap()
+            .column_i64("rstdev", record.rstdev)
+            .unwrap()
+            .column_i64("tcpurg", record.tcpurg)
+            .unwrap()
+            .column_i64("rtcpurg", record.rtcpurg)
+            .unwrap()
+            .column_i64("smallpktcnt", record.smallpktcnt)
+            .unwrap()
+            .column_i64("rsmallpktcnt", record.rsmallpktcnt)
+            .unwrap()
+            .column_i64("nonemptypktcnt", record.nonemptypktcnt)
+            .unwrap()
+            .column_i64("rnonemptypktcnt", record.rnonemptypktcnt)
+            .unwrap()
+            .column_i64("firstnonemptysize", record.firstnonemptysize)
+            .unwrap()
+            .column_i64("rfirstnonemptysize", record.rfirstnonemptysize)
+            .unwrap()
+            .column_i64("maxpktsize", record.maxpktsize)
+            .unwrap()
+            .column_i64("rmaxpktsize", record.rmaxpktsize)
+            .unwrap()
+            .column_i64("stdevpayload", record.stdevpayload)
+            .unwrap()
+            .column_i64("rstdevpayload", record.rstdevpayload)
+            .unwrap()
+            .column_str("mac", record.mac)
+            .unwrap()
+            .column_str("rmac", record.rmac)
+            .unwrap()
+            .column_i64("stdevpayload", record.stdevpayload)
+            .unwrap()
+            .column_i64("rstdevpayload", record.rstdevpayload)
+            .unwrap()
             .at(TimestampNanos::now())
             .unwrap();
 
@@ -215,7 +269,7 @@ pub fn export_questdb(db_in: &Connection, db_out: &String) -> bool {
         Err(e) => {
             eprintln!("error: openining flow file: {e:?}");
             return false;
-        },
+        }
     };
     true
 }
@@ -230,42 +284,40 @@ pub fn export_file(input_spec: &String, output_spec: &String, format: &String) -
     match format.as_str() {
         "csv" => {
             if !output_spec.ends_with("csv") {
-                println!("exporting {} => {}.csv", input_spec, output_spec);
                 sql_command = format!(
                     "COPY (SELECT * FROM flow) TO '{}.csv' (HEADER, DELIMITER ',');",
                     output_spec
                 );
-            } else {
-                println!("exporting {} => {}", input_spec, output_spec);
+            } else {                
                 sql_command = format!(
                     "COPY (SELECT * FROM flow) TO '{}' (HEADER, DELIMITER ',');",
                     output_spec
                 );
             }
+            println!("exported: {} => {}", input_spec, output_spec);
         }
-        "parquet" => {
-            println!("exporting {} => {}", input_spec, output_spec);
+        "parquet" => {           
             conn.execute_batch("INSTALL parquet; LOAD parquet;")
                 .unwrap();
             sql_command = format!(
                 "COPY (SELECT * FROM flow) TO '{}' (FORMAT 'parquet');",
                 output_spec
             );
+            println!("exported: {} => {}", input_spec, output_spec);
         }
         "questdb" => {
-            println!("exporting {} => {}", input_spec, output_spec);
             let status = export_questdb(&conn, output_spec);
-            //let mut stmt = conn.prepare("SELECT id, name, data FROM person").unwrap();
-            //sql_command = format!("COPY (SELECT * FROM flow) TO '{}';", output_spec);
+            println!("exported: {} => {}", input_spec, output_spec);
             return true;
         }
-        "json" => {
-            println!("exporting {} => {}", input_spec, output_spec);
+        "json" => {            
             sql_command = format!("COPY (SELECT * FROM flow) TO '{}';", output_spec);
+            println!("exported: {} => {}", input_spec, output_spec);
         }
         _ => {
-            println!("exporting {} => {}", input_spec, output_spec);
+            // default is JSON          
             sql_command = format!("COPY (SELECT * FROM flow) TO '{}';", output_spec);
+            println!("exported: {} => {}", input_spec, output_spec);
         }
     }
 
@@ -287,8 +339,15 @@ pub fn export(
     format: &String,
 ) {
     if PathBuf::from(input_spec.clone()).is_dir() {
+
+        println!("\tinput spec: {}", input_spec);
+        println!("\toutput spec: {}", output_spec);
+        println!("\tprocessed spec: {}", processed_spec);
+        println!("\tformat: {}", format);
+        println!("\tpolling: {}", polling);
+
         let poll_interval = Duration::from_millis(1000);
-        println!("directory scanner: running");
+        println!("export scanner: running [{}]", input_spec);
         loop {
             let mut counter = 0;
             let directory = match fs::read_dir(input_spec) {
@@ -301,7 +360,7 @@ pub fn export(
                 let file_name = String::from(file.file_name().to_string_lossy());
                 let src_path = String::from(file.path().to_string_lossy());
 
-                if src_path.ends_with(".flow") {
+                if !file_name.starts_with(".") && file_name.ends_with(".flow") {
                     let mut dst_spec;
                     if format == "questdb" {
                         dst_spec = output_spec.clone();

@@ -5,26 +5,26 @@
 FROM shadowmeter_apps AS builder
 FROM bitnami/minideb:bookworm AS runner
 
-
 # ---------------------------------------------------------------
 #
 # ---------------------------------------------------------------
 
 WORKDIR /opt/shadowmeter
-RUN mkdir -p /opt/shadowmeter/scripts /opt/shadowmeter/etc \
-    /opt/shadowmeter/lib/pytorch
+RUN mkdir -p /opt/shadowmeter/ \
+             /opt/shadowmeter/scripts /opt/shadowmeter/etc \
+             /opt/shadowmeter/lib /opt/shadowmeter/lib/pytorch
 
-COPY --from=builder /opt/shadowmeter /opt/shadowmeter
-COPY --from=builder /builder/shadowmeter_engine/target/release/shadowmeter /opt/shadowmeter/bin
-COPY --from=builder /base/libtorch/lib/* /opt/shadowmeter/lib/pytorch/
+COPY --from=builder /usr/local/lib /opt/shadowmeter/lib
+COPY --from=builder /base/libtorch/lib /opt/shadowmeter/lib/pytorch
 
-COPY ./scripts/entrypoint-yaf.sh /opt/shadowmeter/scripts
-COPY ./scripts/entrypoint-super_mediator.sh /opt/shadowmeter/scripts
-COPY ./scripts/entrypoint-shadowmeter.sh /opt/shadowmeter/scripts
+COPY --from=builder /builder/sm_flow/target/release/sm_flow /opt/shadowmeter/bin/sm_flow
+COPY --from=builder /builder/sm_detect/target/release/sm_detect /opt/shadowmeter/bin/sm_detect
+COPY --from=builder /usr/local/bin/yaf /opt/shadowmeter/bin/yaf
+COPY --from=builder /usr/local/bin/duckdb /opt/shadowmeter/bin/duckdb
 
-COPY ./etc/yaf/super_mediator.conf /opt/shadowmeter/etc
-COPY ./etc/yaf/super_mediator_cache.conf /opt/shadowmeter/etc
-COPY ./etc/yaf/yafDPIRules.conf /opt/shadowmeter/etc
+COPY ./scripts/entrypoint-sm_yaf.sh /opt/shadowmeter/scripts/
+COPY ./scripts/entrypoint-sm_import.sh /opt/shadowmeter/scripts/
+COPY ./scripts/entrypoint-sm_export.sh /opt/shadowmeter/scripts/
 COPY ./etc/logrotate/shadowmeter.logrotate /etc/logrotate.d/shadowmeter
 
 

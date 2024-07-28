@@ -9,40 +9,36 @@ services:
       - net_raw
       - sys_nice
     environment:
-      # For live capture, set the following the the monitoring interface
       - SHADOWMETER_INTERFACE=${SHADOWMETER_INTERFACE}  
-      # Or, for offline PCAP analysis, set the followint to the path of` 
-      # a file with a list of PCAP files, one per line
-      # - SHADOWMETER_PCAP_LIST=${SHADOWMETER_PCAP_LIST}
     volumes:
       - ./var/shadowmeter/spool:/var/shadowmeter/spool
-    command: /opt/shadowmeter/scripts/entrypoint-yaf.sh
+    command: /opt/shadowmeter/scripts/entrypoint-sm_yaf.sh
 
-  super_mediator:
+  sm_import:
     image: fidelismachine/shadowmeter:latest
-    container_name: super_mediator
-    restart: unless-stopped  
-    volumes:
-      - ./var/shadowmeter/spool:/var/shadowmeter/spool
-    depends_on:
-      - yaf      
-    command: /opt/shadowmeter/scripts/entrypoint-super_mediator.sh
-
-  shadowmeter:
-    image: fidelismachine/shadowmeter:latest
-    container_name: shadowmeter
+    container_name: sm_import
     restart: unless-stopped   
     environment:
-      - SHADOWMETER_ID=${SHADOWMETER_ID}   # arbitrary label
-      - SHADOWMETER_DATABASE=${SHADOWMETER_DATABASE}
+      - SHADOWMETER_OBSERVATION_ID=${SHADOWMETER_OBSERVATION_ID}   # observatin domain label
+    volumes:
+      - ./var/shadowmeter/spool:/var/shadowmeter/spool  
+      - ./var/maxmind:/var/maxmind:ro          
+    depends_on:
+      - questdb 
+    command: /opt/shadowmeter/scripts/entrypoint-sm_import.sh
+    
+  sm_export:
+    image: fidelismachine/shadowmeter:latest
+    container_name: sm_export
+    restart: unless-stopped   
+    environment:
+      - SHADOWMETER_DB_URI=questdb:9009
     volumes:
       - ./var/shadowmeter/spool:/var/shadowmeter/spool
-      - ./var/shadowmeter/maxmind:/var/shadowmeter/maxmind:ro
     depends_on:
-      - questdb
-      - super_mediator       
-    command: /opt/shadowmeter/scripts/entrypoint-shadowmeter.sh
-    
+      - questdb 
+    command: /opt/shadowmeter/scripts/entrypoint-sm_export.sh
+
   questdb:
     image: questdb/questdb
     container_name: questdb
@@ -64,28 +60,3 @@ services:
       - QBD_LINE_UDP_ENABLED=true
       - QDB_HTTP_MIN_ENABLED=true
 
-  shadowmeter_app:
-    image: fidelismachine/shadowmeter_app:latest
-    container_name: shadowmeter_app
-    restart: unless-stopped
-    user: "0:0"
-    volumes:
-    - ./var/grafana:/var/lib/grafana
-    # uncomment below to enable custom provisioning
-    #- ./grafana/provisioning:/etc/grafana/provisioning
-
-  shadowmeter_nginx:
-    image: fidelismachine/shadowmeter_nginx:latest
-    container_name: shadowmeter_nginx
-    restart: unless-stopped 
-    volumes:
-      - ./var/log/nginx:/var/log/nginx
-      # uncomment below to enable signed certificates
-      #- ./ssl.crt:/etc/nginx/ssl.crt
-      #- ./ssl.key:/etc/nginx/ssl.key      
-  
-    ports:
-      - 80:80/tcp
-      - 443:443/tcp  
-    depends_on:
-      - shadowmeter_app

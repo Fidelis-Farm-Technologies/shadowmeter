@@ -16,29 +16,28 @@ RUN make && make install
 #
 WORKDIR /builder/cert-nsa-yaf
 RUN git checkout ndpi-4.8
-# RUN ./configure --prefix=/opt/shadowmeter --enable-entropy --with-ndpi 
 RUN ./configure --enable-entropy --with-ndpi 
 RUN make && make install
 
 #
-# build shadowmeter
+# build sm_flow
 #
+WORKDIR /builder/sm_flow
+RUN cargo build --release
+
+#
+# build sm_detect
+#
+WORKDIR /builder/sm_detect
 ENV LIBTORCH=/base/libtorch
 ENV LIBTORCH_INCLUDE=/base/libtorch
 ENV LIBTORCH_LIB=/base/libtorch
 ENV LD_LIBRARY_PATH=${LIBTORCH}/lib:$LD_LIBRARY_PATH
-ENV LIBTORCH_BYPASS_VERSION_CHECK=1
-
-WORKDIR /builder/shadowmeter
 RUN cargo build --release
 
 #
 # Update the LD_LIBRARY_PATH
 #
 RUN echo "/opt/shadowmeter/lib" > /etc/ld.so.conf.d/shadowmeter.conf
+RUN echo "/opt/shadowmeter/lib/pytorch" > /etc/ld.so.conf.d/pytorch.conf
 RUN ldconfig
-
-
-
-
-

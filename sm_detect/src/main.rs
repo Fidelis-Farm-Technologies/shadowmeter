@@ -4,9 +4,7 @@
  *  See license information in LICENSE.
  */
 
-extern crate c_string;
 extern crate exitcode;
-extern crate libc;
 
 use crate::shadowmeter::feature::feature;
 use crate::shadowmeter::inference::inference;
@@ -46,13 +44,9 @@ fn parse_command() {
     //
     // verify the combination of arguments are valid
     //
-    if !output_spec.is_empty() && !uri_spec.is_empty() {
-        eprintln!("error: --output <spec> and --uri <spec>  options are mutually exclusive");
-        std::process::exit(exitcode::CONFIG)
-    }
 
-    if output_spec.is_empty() && uri_spec.is_empty() {
-        eprintln!("error: --output <spec> or --uri <spec>  required",);
+    if output_spec.is_empty() {
+        eprintln!("error: --output <spec>  required",);
         std::process::exit(exitcode::CONFIG)
     }
 
@@ -61,21 +55,17 @@ fn parse_command() {
         std::process::exit(exitcode::CONFIG)
     }
 
-    if !Path::new(&output_spec).is_dir()
-        && !Path::new(&output_spec).is_file()
-        && uri_spec.is_empty()
-    {
+    if !Path::new(&output_spec).is_dir() && !Path::new(&output_spec).is_file() {
         eprintln!("error: invalid --output {}", output_spec);
         std::process::exit(exitcode::CONFIG)
     }
 
-    if Path::new(&input_spec).is_file() && !Path::new(&output_spec).is_file() && uri_spec.is_empty()
-    {
+    if Path::new(&input_spec).is_file() && !Path::new(&output_spec).is_file() {
         eprintln!("error: --input <file spec> requires --output <file spec>");
         std::process::exit(exitcode::CONFIG)
     }
 
-    if Path::new(&input_spec).is_dir() && !Path::new(&output_spec).is_dir() && uri_spec.is_empty() {
+    if Path::new(&input_spec).is_dir() && !Path::new(&output_spec).is_dir() {
         eprintln!("error: --input <dir spec> requires --output <dir spec>");
         std::process::exit(exitcode::CONFIG)
     }
@@ -95,12 +85,10 @@ fn parse_command() {
 
     match command_spec.as_str() {
         "feature" => {
-            let format = args.format.clone().unwrap_or("json".to_string());
-            let _ = feature(&input_spec, &output_spec, &processed_spec, polling, &format);
+            let _ = feature(&input_spec, &output_spec, &processed_spec, polling);
         }
         "inference" => {
-            let format = args.format.clone().unwrap_or("json".to_string());
-            let _ = inference(&input_spec, &output_spec, &processed_spec, polling, &format);
+            let _ = inference(&input_spec, &output_spec, &processed_spec, polling);
         }
         _ => {
             eprintln!("error: invalid --command <option>");
