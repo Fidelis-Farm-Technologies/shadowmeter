@@ -1,4 +1,4 @@
-# Warning: this project is deprecated and superseded by [Galileo Newtwork Analytics Toolkit](https://github.com/Fidelis-Farm-Technologies/galileo_toolkit)
+# Warning: this project has been renamed and moved to [Galileo Newtwork Analytics Toolkit](https://github.com/Fidelis-Farm-Technologies/galileo_toolkit)
 
 ![ShadowMeter](shadowmeter-dark.png#gh-dark-mode-only)
 ![ShadowMeter](shadowmeter-light.png#gh-light-mode-only)
