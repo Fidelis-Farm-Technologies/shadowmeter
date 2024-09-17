@@ -1,6 +1,7 @@
+# Warning: this project is deprecated and superseded by [Galileo Newtwork Analytics Toolkit](https://github.com/Fidelis-Farm-Technologies/galileo_toolkit)
+
 ![ShadowMeter](shadowmeter-dark.png#gh-dark-mode-only)
 ![ShadowMeter](shadowmeter-light.png#gh-light-mode-only)
-
 
 A microservices-based Network Anomaly Detection System designed for IoT/OT:
 - [YAF](https://tools.netsa.cert.org/yaf/)
@@ -142,6 +143,6 @@ ShadowMeter App includes an automatically generated self-signed certificate for 
 
 ## Community
 
-For more information join the community at our [blog](https://www.shadowmeter.io).
+For more information join the community at our [blog](https://www.galileonetworks.dev).
 
 &copy;2024 Fidelis Farm & Technologies, LLC.
